@@ -7,7 +7,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-<video class="bg-video" autoplay muted loop playsinline><source src="0318.mp4" type="video/mp4"></video>
 <div class="blob blob-1"></div><div class="blob blob-2"></div><div class="blob blob-3"></div>
 <div class="cursor-glow"></div>
 <span class="fruit-deco" style="top:20%;right:4%">🍋</span><span class="fruit-deco" style="bottom:12%;left:5%">🥕</span>
@@ -39,6 +38,10 @@
 <div class="form-group"><label for="campo-tipo">Tipo</label>
 <select id="campo-tipo" required><option value="" disabled selected>Selecione a categoria primeiro</option></select></div>
 <div class="form-group" id="nome-group"><label for="campo-nome">Nome</label><input type="text" id="campo-nome" placeholder="Digite o nome..." required></div>
+<div class="form-group" id="group-classe" style="display:none;"><label for="campo-classe">Classe</label>
+<select id="campo-classe"><option value="" disabled selected>Selecione...</option><option value="Transporte">Transporte</option><option value="Alimentação">Alimentação</option><option value="Infraestrutura">Infraestrutura</option><option value="Outras Despesas">Outras Despesas</option></select></div>
+<div class="form-group" id="group-grupo" style="display:none;"><label for="campo-grupo">Grupo</label>
+<select id="campo-grupo"><option value="" disabled selected>Selecione a classe primeiro</option></select></div>
 <div class="form-group full-width"><label for="campo-descricao">Descrição <span style="color:var(--tx3);font-weight:400">(opcional)</span></label><textarea id="campo-descricao" placeholder="Descrição do lançamento..." rows="2"></textarea></div>
 <div class="form-group"><label for="campo-valor">Valor (R$)</label><input type="number" id="campo-valor" step="0.01" min="0" placeholder="0,00" required></div>
 <div class="form-actions">
@@ -50,21 +53,64 @@
 <script src="data.js"></script><script src="script.js"></script>
 <script>
 const catSel=document.getElementById('campo-categoria'),tipoSel=document.getElementById('campo-tipo'),form=document.getElementById('cadastroForm');
+const classeSel=document.getElementById('campo-classe'),groupClasse=document.getElementById('group-classe'),groupGrupo=document.getElementById('group-grupo');
 const funcs=['Macai','Hamilton','Joice','Peninha','Binladem','Baixinho'];
 document.getElementById('campo-data').valueAsDate=new Date();
+
+function checkOutros(){
+  if(catSel.value==='Outros' && tipoSel.value==='Despesa'){
+    groupClasse.style.display='flex'; groupGrupo.style.display='flex';
+    classeSel.required=true; const i=document.getElementById('campo-grupo'); if(i)i.required=true;
+  }else{
+    groupClasse.style.display='none'; groupGrupo.style.display='none';
+    classeSel.required=false; const i=document.getElementById('campo-grupo'); if(i)i.required=false;
+    classeSel.value=''; resetGrupo();
+  }
+}
+
 catSel.addEventListener('change',()=>{
   const c=catSel.value;
   tipoSel.innerHTML=c==='Clientes'?'<option value="Faturamento" selected>Faturamento</option>':'<option value="" disabled selected>Selecione...</option><option value="Faturamento">Faturamento</option><option value="Despesa">Despesa</option>';
   if(c==='Funcionários'){const s=document.createElement('select');s.id='campo-nome';s.required=true;s.innerHTML='<option value="" disabled selected>Selecione...</option>'+funcs.map(f=>`<option value="${f}">${f}</option>`).join('');document.getElementById('campo-nome').replaceWith(s)}
-  else{const cur=document.getElementById('campo-nome');if(cur.tagName==='SELECT'){const i=document.createElement('input');i.type='text';i.id='campo-nome';i.placeholder='Digite o nome...';i.required=true;cur.replaceWith(i)}}
+  else{resetNome()}
+  checkOutros();
 });
+tipoSel.addEventListener('change', checkOutros);
+
+function resetGrupo(){
+  const g=document.getElementById('campo-grupo');
+  const s=document.createElement('select'); s.id='campo-grupo'; s.innerHTML='<option value="" disabled selected>Selecione a classe primeiro</option>';
+  g.replaceWith(s);
+}
+
+classeSel.addEventListener('change', ()=>{
+  const c=classeSel.value, g=document.getElementById('campo-grupo');
+  let h='<option value="" disabled selected>Selecione...</option>';
+  if(c==='Transporte'){
+    h+='<option value="Combustível">Combustível</option><option value="Frete">Frete</option><option value="IPVA">IPVA</option><option value="Seguro">Seguro</option><option value="Multa">Multa</option><option value="Mecânica">Mecânica</option><option value="Prestações">Prestações</option><option value="Diária">Diária</option><option value="Outros">Outros</option>';
+    const s=document.createElement('select'); s.id='campo-grupo'; s.required=true; s.innerHTML=h; g.replaceWith(s);
+  }else if(c==='Alimentação'){
+    h+='<option value="Almoço">Almoço</option><option value="Café da Manhã">Café da Manhã</option><option value="Diversos">Diversos</option>';
+    const s=document.createElement('select'); s.id='campo-grupo'; s.required=true; s.innerHTML=h; g.replaceWith(s);
+  }else if(c==='Infraestrutura'){
+    h+='<option value="Aluguel">Aluguel</option><option value="Internet">Internet</option><option value="Embalagens">Embalagens</option><option value="Impostos">Impostos</option><option value="Prestações">Prestações</option><option value="Outros">Outros</option>';
+    const s=document.createElement('select'); s.id='campo-grupo'; s.required=true; s.innerHTML=h; g.replaceWith(s);
+  }else if(c==='Outras Despesas'){
+    const i=document.createElement('input'); i.type='text'; i.id='campo-grupo'; i.required=true; i.placeholder='Qual despesa?'; g.replaceWith(i);
+  }
+});
+
 function resetNome(){const c=document.getElementById('campo-nome');if(c.tagName==='SELECT'){const i=document.createElement('input');i.type='text';i.id='campo-nome';i.placeholder='Digite o nome...';i.required=true;c.replaceWith(i)}}
 form.addEventListener('submit',e=>{e.preventDefault();
   const entry={data:document.getElementById('campo-data').value,categoria:catSel.value,tipo:tipoSel.value,nome:document.getElementById('campo-nome').value,descricao:document.getElementById('campo-descricao').value,valor:parseFloat(document.getElementById('campo-valor').value)};
+  if(groupClasse.style.display !== 'none'){
+    entry.classe = classeSel.value;
+    entry.grupo = document.getElementById('campo-grupo').value;
+  }
   if(!entry.data||!entry.categoria||!entry.tipo||!entry.nome||isNaN(entry.valor)){showToast('Preencha todos os campos!','warning');return}
   addEntry(entry);showToast('Cadastrado com sucesso!');form.reset();document.getElementById('campo-data').valueAsDate=new Date();
-  tipoSel.innerHTML='<option value="" disabled selected>Selecione a categoria primeiro</option>';resetNome();
+  tipoSel.innerHTML='<option value="" disabled selected>Selecione a categoria primeiro</option>';resetNome();resetGrupo();checkOutros();
 });
-document.getElementById('btn-limpar').addEventListener('click',()=>{form.reset();document.getElementById('campo-data').valueAsDate=new Date();tipoSel.innerHTML='<option value="" disabled selected>Selecione a categoria primeiro</option>';resetNome()});
+document.getElementById('btn-limpar').addEventListener('click',()=>{form.reset();document.getElementById('campo-data').valueAsDate=new Date();tipoSel.innerHTML='<option value="" disabled selected>Selecione a categoria primeiro</option>';resetNome();resetGrupo();checkOutros();});
 </script>
 </body></html>
