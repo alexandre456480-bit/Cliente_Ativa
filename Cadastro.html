@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Dashboard | Cadastro</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+<video class="bg-video" autoplay muted loop playsinline><source src="0318.mp4" type="video/mp4"></video>
+<div class="blob blob-1"></div><div class="blob blob-2"></div><div class="blob blob-3"></div>
+<div class="cursor-glow"></div>
+<span class="fruit-deco" style="top:20%;right:4%">🍋</span><span class="fruit-deco" style="bottom:12%;left:5%">🥕</span>
+
+<div class="container-wrapper"><div class="parent grid-cadastro">
+
+<div class="card sidebar-card div1"><div class="sidebar-content">
+<h3 class="menu-title">Menu Principal</h3>
+<nav class="sidebar-nav">
+<a href="index.html" class="nav-item"><i class="fa-solid fa-chart-line"></i><span>Financeiro</span></a>
+<a href="Clientes.html" class="nav-item"><i class="fa-solid fa-users"></i><span>Clientes</span></a>
+<a href="Funcionarios.html" class="nav-item"><i class="fa-solid fa-user-tie"></i><span>Funcionários</span></a>
+<a href="Cadastro.html" class="nav-item"><i class="fa-solid fa-file-circle-plus"></i><span>Cadastro</span></a>
+<a href="dados.html" class="nav-item"><i class="fa-solid fa-database"></i><span>Dados</span></a>
+</nav><div class="sidebar-fruits">🍎 🥦 🍊 🥕 🍋</div>
+</div></div>
+
+<div class="card header-card tilt div2">
+<div class="header-left"><h1><span class="header-highlight">Dashboard</span><span class="header-pipe">|</span>Controle Financeiro</h1></div>
+<div class="header-right"><span class="company-name">Ativa Distribuidora<span class="nome-glow"></span></span></div>
+</div>
+
+<div class="card form-card div3">
+<div class="form-title"><i class="fa-solid fa-file-circle-plus"></i> Novo Cadastro</div>
+<form id="cadastroForm" class="form-grid" autocomplete="off">
+<div class="form-group"><label for="campo-data">Data</label><input type="date" id="campo-data" required></div>
+<div class="form-group"><label for="campo-categoria">Categoria</label>
+<select id="campo-categoria" required><option value="" disabled selected>Selecione...</option><option value="Clientes">Clientes</option><option value="Funcionários">Funcionários</option><option value="Outros">Outros</option></select></div>
+<div class="form-group"><label for="campo-tipo">Tipo</label>
+<select id="campo-tipo" required><option value="" disabled selected>Selecione a categoria primeiro</option></select></div>
+<div class="form-group" id="nome-group"><label for="campo-nome">Nome</label><input type="text" id="campo-nome" placeholder="Digite o nome..." required></div>
+<div class="form-group full-width"><label for="campo-descricao">Descrição <span style="color:var(--tx3);font-weight:400">(opcional)</span></label><textarea id="campo-descricao" placeholder="Descrição do lançamento..." rows="2"></textarea></div>
+<div class="form-group"><label for="campo-valor">Valor (R$)</label><input type="number" id="campo-valor" step="0.01" min="0" placeholder="0,00" required></div>
+<div class="form-actions">
+<button type="button" class="btn-secondary" id="btn-limpar"><i class="fa-solid fa-eraser"></i> Limpar</button>
+<button type="submit" class="btn-primary"><i class="fa-solid fa-plus"></i> Cadastrar</button>
+</div></form></div>
+
+</div></div>
+<script src="data.js"></script><script src="script.js"></script>
+<script>
+const catSel=document.getElementById('campo-categoria'),tipoSel=document.getElementById('campo-tipo'),form=document.getElementById('cadastroForm');
+const funcs=['Macai','Hamilton','Joice','Peninha','Binladem','Baixinho'];
+document.getElementById('campo-data').valueAsDate=new Date();
+catSel.addEventListener('change',()=>{
+  const c=catSel.value;
+  tipoSel.innerHTML=c==='Clientes'?'<option value="Faturamento" selected>Faturamento</option>':'<option value="" disabled selected>Selecione...</option><option value="Faturamento">Faturamento</option><option value="Despesa">Despesa</option>';
+  if(c==='Funcionários'){const s=document.createElement('select');s.id='campo-nome';s.required=true;s.innerHTML='<option value="" disabled selected>Selecione...</option>'+funcs.map(f=>`<option value="${f}">${f}</option>`).join('');document.getElementById('campo-nome').replaceWith(s)}
+  else{const cur=document.getElementById('campo-nome');if(cur.tagName==='SELECT'){const i=document.createElement('input');i.type='text';i.id='campo-nome';i.placeholder='Digite o nome...';i.required=true;cur.replaceWith(i)}}
+});
+function resetNome(){const c=document.getElementById('campo-nome');if(c.tagName==='SELECT'){const i=document.createElement('input');i.type='text';i.id='campo-nome';i.placeholder='Digite o nome...';i.required=true;c.replaceWith(i)}}
+form.addEventListener('submit',e=>{e.preventDefault();
+  const entry={data:document.getElementById('campo-data').value,categoria:catSel.value,tipo:tipoSel.value,nome:document.getElementById('campo-nome').value,descricao:document.getElementById('campo-descricao').value,valor:parseFloat(document.getElementById('campo-valor').value)};
+  if(!entry.data||!entry.categoria||!entry.tipo||!entry.nome||isNaN(entry.valor)){showToast('Preencha todos os campos!','warning');return}
+  addEntry(entry);showToast('Cadastrado com sucesso!');form.reset();document.getElementById('campo-data').valueAsDate=new Date();
+  tipoSel.innerHTML='<option value="" disabled selected>Selecione a categoria primeiro</option>';resetNome();
+});
+document.getElementById('btn-limpar').addEventListener('click',()=>{form.reset();document.getElementById('campo-data').valueAsDate=new Date();tipoSel.innerHTML='<option value="" disabled selected>Selecione a categoria primeiro</option>';resetNome()});
+</script>
+</body></html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Dashboard | Funcionários</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<video class="bg-video" autoplay muted loop playsinline><source src="0318.mp4" type="video/mp4"></video>
+<div class="blob blob-1"></div><div class="blob blob-2"></div><div class="blob blob-3"></div>
+<div class="cursor-glow"></div>
+<span class="fruit-deco" style="top:10%;right:5%">🍎</span><span class="fruit-deco" style="bottom:15%;left:4%">🥦</span>
+
+<div class="container-wrapper"><div class="parent grid-funcionarios">
+
+<div class="card sidebar-card div1"><div class="sidebar-content">
+<h3 class="menu-title">Menu Principal</h3>
+<nav class="sidebar-nav">
+<a href="index.html" class="nav-item"><i class="fa-solid fa-chart-line"></i><span>Financeiro</span></a>
+<a href="Clientes.html" class="nav-item"><i class="fa-solid fa-users"></i><span>Clientes</span></a>
+<a href="Funcionarios.html" class="nav-item"><i class="fa-solid fa-user-tie"></i><span>Funcionários</span></a>
+<a href="Cadastro.html" class="nav-item"><i class="fa-solid fa-file-circle-plus"></i><span>Cadastro</span></a>
+<a href="dados.html" class="nav-item"><i class="fa-solid fa-database"></i><span>Dados</span></a>
+</nav><div class="sidebar-fruits">🍎 🥦 🍊 🥕 🍋</div>
+</div></div>
+
+<div class="card header-card tilt div2">
+<div class="header-left"><h1><span class="header-highlight">Dashboard</span><span class="header-pipe">|</span>Controle Financeiro</h1></div>
+<div class="header-right">
+<div class="global-filter">
+<button class="filter-btn active" data-period="total">Total</button>
+<button class="filter-btn" data-period="month">Mês</button>
+<button class="filter-btn" data-period="week">Semana</button>
+<button class="filter-btn" data-period="day">Dia</button>
+</div>
+<span class="company-name">Ativa Distribuidora<span class="nome-glow"></span></span>
+</div></div>
+
+<div class="card chart-card div3">
+<div class="chart-header"><span class="chart-title"><i class="fa-solid fa-chart-column" style="color:var(--grn);margin-right:5px"></i>Faturamento por Funcionário</span></div>
+<div class="chart-body"><canvas id="barFatChart"></canvas></div>
+</div>
+
+<div class="card chart-card div4">
+<div class="chart-header"><span class="chart-title"><i class="fa-solid fa-chart-pie" style="color:var(--blu);margin-right:5px"></i>Pedidos por Funcionário</span></div>
+<div class="chart-body"><canvas id="pieChart"></canvas></div>
+</div>
+
+<div class="card chart-card div5">
+<div class="chart-header"><span class="chart-title"><i class="fa-solid fa-chart-bar" style="color:var(--red);margin-right:5px"></i>Despesas por Funcionário</span></div>
+<div class="chart-body"><canvas id="barDespChart"></canvas></div>
+</div>
+
+<div class="card card-kpi card-red div6">
+<div class="kpi-icon"><i class="fa-solid fa-money-bill-transfer"></i></div>
+<div class="kpi-value" id="kpi-desp-func">R$ 0</div>
+<div class="kpi-label">Despesa Funcionários</div>
+<div class="kpi-growth" id="kpi-desp-func-g"><i class="fa-solid fa-arrow-trend-down"></i><span>0%</span><span class="kpi-period">vs mês ant.</span></div>
+</div>
+
+</div></div>
+
+<script src="data.js"></script><script src="script.js"></script>
+<script>
+let barFatChart,pieChart,barDespChart,gPeriod='total';
+const barC=['#059669','#10B981','#34D399','#047857','#065F46','#6EE7B7'];
+const pieC=['#3B82F6','#6366F1','#8B5CF6','#EC4899','#F59E0B','#10B981'];
+const redC=['#EF4444','#F87171','#DC2626','#FB923C','#F97316','#FCA5A5'];
+function refreshDashboard(){
+  const all=loadData(),fd=filterByPeriod(all,gPeriod),fc=fd.filter(d=>d.categoria==='Funcionários');
+  const td=sumByType(fc,'Despesa');document.getElementById('kpi-desp-func').textContent=formatCurrency(td);
+  const curM=filterByPeriod(all,'month').filter(d=>d.categoria==='Funcionários'),prevM=getPrevPeriodData(all,'month').filter(d=>d.categoria==='Funcionários');
+  const dg=calcGrowth(sumByType(curM,'Despesa'),sumByType(prevM,'Despesa'));
+  const el=document.getElementById('kpi-desp-func-g');el.className='kpi-growth '+(dg<=0?'positive':'negative');
+  el.innerHTML=`<i class="fa-solid fa-arrow-trend-${dg<=0?'down':'up'}"></i><span>${dg>=0?'+':''}${dg.toFixed(1)}%</span><span class="kpi-period">vs mês ant.</span>`;
+  upBarFat(fd);upPie(fd);upBarDesp(fd);
+}
+function upBarFat(fd){const d=getEmployeeData(fd,'Faturamento');if(barFatChart){barFatChart.data.labels=d.names;barFatChart.data.datasets[0].data=d.values;barFatChart.update();return}
+  barFatChart=new Chart(document.getElementById('barFatChart'),{type:'bar',data:{labels:d.names,datasets:[{label:'Faturamento',data:d.values,backgroundColor:barC,borderRadius:8,borderSkipped:false,barPercentage:.65}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#1E293B',cornerRadius:10,padding:10,bodyFont:{size:10,family:'Inter'},callbacks:{label:c=>formatCurrency(c.raw)}}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:9,family:'Inter'},color:'#94A3B8'}},y:{grid:{color:'#F1F5F9'},ticks:{font:{size:9,family:'Inter'},color:'#94A3B8',callback:v=>v>=1000?(v/1000)+'k':v}}}}})}
+function upPie(fd){const d=getEmployeeOrders(fd);if(pieChart){pieChart.data.labels=d.names;pieChart.data.datasets[0].data=d.values;pieChart.update();return}
+  pieChart=new Chart(document.getElementById('pieChart'),{type:'doughnut',data:{labels:d.names,datasets:[{data:d.values,backgroundColor:pieC,borderWidth:3,borderColor:'#fff',hoverOffset:8}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{position:'right',labels:{usePointStyle:true,pointStyle:'circle',padding:8,font:{size:9,family:'Inter'}}},
+      tooltip:{backgroundColor:'#1E293B',cornerRadius:10,padding:10,bodyFont:{size:10,family:'Inter'},callbacks:{label:c=>c.label+': '+c.raw+' pedido'+(c.raw!==1?'s':'')}}}}})}
+function upBarDesp(fd){const d=getEmployeeData(fd,'Despesa');if(barDespChart){barDespChart.data.labels=d.names;barDespChart.data.datasets[0].data=d.values;barDespChart.update();return}
+  barDespChart=new Chart(document.getElementById('barDespChart'),{type:'bar',data:{labels:d.names,datasets:[{label:'Despesas',data:d.values,backgroundColor:redC,borderRadius:8,borderSkipped:false,barPercentage:.65}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#1E293B',cornerRadius:10,padding:10,bodyFont:{size:10,family:'Inter'},callbacks:{label:c=>formatCurrency(c.raw)}}},
+      scales:{y:{grid:{display:false},ticks:{font:{size:9,family:'Inter'},color:'#94A3B8'}},x:{grid:{color:'#F1F5F9'},ticks:{font:{size:9,family:'Inter'},color:'#94A3B8',callback:v=>v>=1000?(v/1000)+'k':v}}}}})}
+document.querySelectorAll('.filter-btn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');gPeriod=b.dataset.period;refreshDashboard()}));
+document.addEventListener('DOMContentLoaded',()=>setTimeout(refreshDashboard,100));
+window.addEventListener('storage',e=>{if(e.key===DATA_KEY)refreshDashboard()});
+</script>
+</body></html>
