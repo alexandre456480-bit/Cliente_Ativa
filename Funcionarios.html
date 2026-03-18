@@ -8,7 +8,6 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
-<video class="bg-video" autoplay muted loop playsinline><source src="0318.mp4" type="video/mp4"></video>
 <div class="blob blob-1"></div><div class="blob blob-2"></div><div class="blob blob-3"></div>
 <div class="cursor-glow"></div>
 <span class="fruit-deco" style="top:10%;right:5%">🍎</span><span class="fruit-deco" style="bottom:15%;left:4%">🥦</span>
@@ -60,6 +59,28 @@
 <div class="kpi-growth" id="kpi-desp-func-g"><i class="fa-solid fa-arrow-trend-down"></i><span>0%</span><span class="kpi-period">vs mês ant.</span></div>
 </div>
 
+<div class="card funnel-card div7">
+<div class="funnel-header"><span class="funnel-title"><i class="fa-solid fa-car" style="color:var(--gold);margin-right:5px"></i>Despesas: Transporte</span></div>
+<div class="funnel-container" id="funnel-transporte"></div>
+</div>
+<div class="card funnel-card div8">
+<div class="funnel-header"><span class="funnel-title"><i class="fa-solid fa-utensils" style="color:var(--grn);margin-right:5px"></i>Despesas: Alimentação</span></div>
+<div class="funnel-container" id="funnel-alimentacao"></div>
+</div>
+<div class="card funnel-card div9">
+<div class="funnel-header"><span class="funnel-title"><i class="fa-solid fa-building" style="color:var(--blu);margin-right:5px"></i>Despesas: Infraestrutura</span></div>
+<div class="funnel-container" id="funnel-infraestrutura"></div>
+</div>
+<div class="card funnel-card div10">
+<div class="funnel-header"><span class="funnel-title"><i class="fa-solid fa-box-open" style="color:var(--pur);margin-right:5px"></i>Outras Despesas</span></div>
+<div class="funnel-container" id="funnel-outras"></div>
+</div>
+
+<div class="card summary-card div11">
+<div class="summary-title"><i class="fa-solid fa-file-invoice-dollar"></i> Resumo Analítico de Despesas</div>
+<p class="summary-text" id="summary-despesas">Carregando...</p>
+</div>
+
 </div></div>
 
 <script src="data.js"></script><script src="script.js"></script>
@@ -75,7 +96,30 @@ function refreshDashboard(){
   const dg=calcGrowth(sumByType(curM,'Despesa'),sumByType(prevM,'Despesa'));
   const el=document.getElementById('kpi-desp-func-g');el.className='kpi-growth '+(dg<=0?'positive':'negative');
   el.innerHTML=`<i class="fa-solid fa-arrow-trend-${dg<=0?'down':'up'}"></i><span>${dg>=0?'+':''}${dg.toFixed(1)}%</span><span class="kpi-period">vs mês ant.</span>`;
-  upBarFat(fd);upPie(fd);upBarDesp(fd);
+  upBarFat(fd);upPie(fd);upBarDesp(fd);upFunnels(fd);
+}
+function sumGroups(data, classe){
+  const filtered = data.filter(d=>d.categoria==='Outros' && d.tipo==='Despesa' && d.classe===classe);
+  if(!filtered.length) return [];
+  const map={}; filtered.forEach(d=>{map[d.grupo]=(map[d.grupo]||0)+d.valor;});
+  return Object.entries(map).sort((a,b)=>b[1]-a[1]);
+}
+function renderFunnel(arr, id, cols){
+  const c=document.getElementById(id);
+  if(!arr.length){c.innerHTML='<div class="empty-table"><i class="fa-regular fa-folder-open"></i> Sem dados</div>';return;}
+  const mx=arr[0][1], tf=arr.reduce((s,x)=>s+x[1],0);
+  c.innerHTML=arr.slice(0,5).map(([n,v],i)=>`<div class="funnel-item"><span class="funnel-rank">${i+1}º</span><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${mx>0?(v/mx*100):0}%;background:${cols[i%cols.length]}">${tf>0?(v/tf*100).toFixed(1):0}%</div></div><div class="funnel-info"><span class="funnel-name">${n.length>16?n.slice(0,14)+'…':n}</span><span class="funnel-val">${formatCurrency(v)}</span></div></div>`).join('');
+}
+function upFunnels(fd){
+  const trans=sumGroups(fd, 'Transporte'), ali=sumGroups(fd, 'Alimentação'), infra=sumGroups(fd, 'Infraestrutura'), out=sumGroups(fd, 'Outras Despesas');
+  renderFunnel(trans, 'funnel-transporte', ['#D97706','#F59E0B','#FBBF24','#FCD34D','#FDE68A']);
+  renderFunnel(ali, 'funnel-alimentacao', ['#059669','#10B981','#34D399','#6EE7B7','#A7F3D0']);
+  renderFunnel(infra, 'funnel-infraestrutura', ['#2563EB','#3B82F6','#60A5FA','#93C5FD','#BFDBFE']);
+  renderFunnel(out, 'funnel-outras', ['#7C3AED','#8B5CF6','#A78BFA','#C4B5FD','#DDD6FE']);
+  
+  const tf = sumByType(fd.filter(d=>d.categoria==='Funcionários'),'Despesa');
+  const ttrans=trans.reduce((s,x)=>s+x[1],0), tali=ali.reduce((s,x)=>s+x[1],0), tinfra=infra.reduce((s,x)=>s+x[1],0), tout=out.reduce((s,x)=>s+x[1],0);
+  document.getElementById('summary-despesas').innerHTML=`O período selecionado gerou um gasto de <strong>${formatCurrency(tf)}</strong> com a equipe de Funcionários. Nas Despesas Operacionais (Outros), a classe Transporte totalizou <strong>${formatCurrency(ttrans)}</strong>, Alimentação representou <strong>${formatCurrency(tali)}</strong>, enquanto Infraestrutura e Outros custaram <strong>${formatCurrency(tinfra)}</strong> e <strong>${formatCurrency(tout)}</strong> respectivamente.`;
 }
 function upBarFat(fd){const d=getEmployeeData(fd,'Faturamento');if(barFatChart){barFatChart.data.labels=d.names;barFatChart.data.datasets[0].data=d.values;barFatChart.update();return}
   barFatChart=new Chart(document.getElementById('barFatChart'),{type:'bar',data:{labels:d.names,datasets:[{label:'Faturamento',data:d.values,backgroundColor:barC,borderRadius:8,borderSkipped:false,barPercentage:.65}]},

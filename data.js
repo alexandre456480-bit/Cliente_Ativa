@@ -23,11 +23,12 @@ function initTestData(){
     {id:'t13',data:'2026-03-05',categoria:'Funcionários',tipo:'Despesa',nome:'Baixinho',descricao:'Salário mensal',valor:3000},
     {id:'t14',data:'2026-03-10',categoria:'Funcionários',tipo:'Faturamento',nome:'Macai',descricao:'Comissão instalação',valor:950},
     {id:'t15',data:'2026-03-15',categoria:'Funcionários',tipo:'Faturamento',nome:'Hamilton',descricao:'Bônus meta atingida',valor:2100},
-    {id:'t16',data:'2026-03-02',categoria:'Outros',tipo:'Despesa',nome:'Aluguel Galpão',descricao:'Aluguel do galpão principal',valor:6500},
-    {id:'t17',data:'2026-03-03',categoria:'Outros',tipo:'Despesa',nome:'Conta de Energia',descricao:'Fatura mensal',valor:1850.75},
+    {id:'t16',data:'2026-03-02',categoria:'Outros',tipo:'Despesa',classe:'Infraestrutura',grupo:'Aluguel',nome:'Aluguel Galpão',descricao:'Aluguel do galpão principal',valor:6500},
+    {id:'t17',data:'2026-03-03',categoria:'Outros',tipo:'Despesa',classe:'Infraestrutura',grupo:'Internet',nome:'Conta de Energia',descricao:'Fatura mensal',valor:1850.75},
     {id:'t18',data:'2026-03-08',categoria:'Outros',tipo:'Faturamento',nome:'Venda de Sucata',descricao:'Material reciclável',valor:2300},
-    {id:'t19',data:'2026-03-14',categoria:'Outros',tipo:'Despesa',nome:'Manutenção Veículos',descricao:'Troca de óleo e pneus',valor:4100},
-    {id:'t20',data:'2026-03-18',categoria:'Outros',tipo:'Despesa',nome:'Material Escritório',descricao:'Papelaria e suprimentos',valor:680}
+    {id:'t19',data:'2026-03-14',categoria:'Outros',tipo:'Despesa',classe:'Transporte',grupo:'Mecânica',nome:'Manutenção Veículos',descricao:'Troca de óleo e pneus',valor:4100},
+    {id:'t20',data:'2026-03-18',categoria:'Outros',tipo:'Despesa',classe:'Alimentação',grupo:'Almoço',nome:'Material Escritório',descricao:'Papelaria e suprimentos',valor:680},
+    {id:'t21',data:'2026-03-19',categoria:'Outros',tipo:'Despesa',classe:'Outras Despesas',grupo:'Limpeza',nome:'Material de Limpeza',descricao:'Fios, panos, desinfetantes',valor:350}
   ]);
 }
 
@@ -139,9 +140,9 @@ function showToast(msg,type='success'){
 function exportCSV(cat){
   const data=cat?getByCategory(cat):loadData();
   if(!data.length){showToast('Nenhum dado para exportar!','warning');return}
-  const h=['Data','Categoria','Tipo','Nome','Descrição','Valor'];
+  const h=['Data','Categoria','Tipo','Classe','Grupo','Nome','Descrição','Valor'];
   let csv='\uFEFF'+h.join(';')+'\n';
-  data.forEach(d=>{csv+=[d.data,d.categoria,d.tipo,d.nome,d.descricao||'',d.valor].map(c=>`"${String(c).replace(/"/g,'""')}"`).join(';')+'\n'});
+  data.forEach(d=>{csv+=[d.data,d.categoria,d.tipo,d.classe||'',d.grupo||'',d.nome,d.descricao||'',d.valor].map(c=>`"${String(c).replace(/"/g,'""')}"`).join(';')+'\n'});
   const b=new Blob([csv],{type:'text/csv;charset=utf-8;'});const u=URL.createObjectURL(b);
   const a=document.createElement('a');a.href=u;a.download=`dados_${cat||'todos'}_${new Date().toISOString().slice(0,10)}.csv`;a.click();URL.revokeObjectURL(u);
   showToast('CSV exportado com sucesso!')
@@ -156,7 +157,11 @@ function importCSV(file){
         const sep=lines[0].includes(';')?';':',';const imp=[];
         for(let i=1;i<lines.length;i++){
           const c=lines[i].split(sep).map(x=>x.replace(/^"|"$/g,'').trim());if(c.length<6)continue;
-          imp.push({id:Date.now()+'_'+i+'_'+Math.random().toString(36).substr(2,3),data:c[0],categoria:c[1],tipo:c[2],nome:c[3],descricao:c[4]||'',valor:parseFloat(c[5].replace(',','.'))||0})
+          if(lines[0].includes('Classe') && c.length>=8){
+            imp.push({id:Date.now()+'_'+i+'_'+Math.random().toString(36).substr(2,3),data:c[0],categoria:c[1],tipo:c[2],classe:c[3],grupo:c[4],nome:c[5],descricao:c[6]||'',valor:parseFloat(c[7].replace(',','.'))||0})
+          }else{
+            imp.push({id:Date.now()+'_'+i+'_'+Math.random().toString(36).substr(2,3),data:c[0],categoria:c[1],tipo:c[2],nome:c[3],descricao:c[4]||'',valor:parseFloat(c[5].replace(',','.'))||0})
+          }
         }
         const d=loadData();d.push(...imp);saveData(d);resolve(imp.length)
       }catch(err){reject('Erro: '+err.message)}

@@ -7,7 +7,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-<video class="bg-video" autoplay muted loop playsinline><source src="0318.mp4" type="video/mp4"></video>
 <div class="blob blob-1"></div><div class="blob blob-2"></div><div class="blob blob-3"></div>
 <div class="cursor-glow"></div>
 <span class="fruit-deco" style="top:18%;left:4%">🍊</span><span class="fruit-deco" style="bottom:10%;right:5%">🥬</span>
@@ -45,7 +44,7 @@
 </div>
 <div class="tab-panel active" id="panel-clientes"><div class="data-table-wrapper"><table class="data-table" id="table-clientes"><thead><tr><th>Data</th><th>Tipo</th><th>Nome</th><th>Descrição</th><th>Valor</th><th>Ação</th></tr></thead><tbody></tbody></table></div></div>
 <div class="tab-panel" id="panel-funcionarios"><div class="data-table-wrapper"><table class="data-table" id="table-funcionarios"><thead><tr><th>Data</th><th>Tipo</th><th>Nome</th><th>Descrição</th><th>Valor</th><th>Ação</th></tr></thead><tbody></tbody></table></div></div>
-<div class="tab-panel" id="panel-outros"><div class="data-table-wrapper"><table class="data-table" id="table-outros"><thead><tr><th>Data</th><th>Tipo</th><th>Nome</th><th>Descrição</th><th>Valor</th><th>Ação</th></tr></thead><tbody></tbody></table></div></div>
+<div class="tab-panel" id="panel-outros"><div class="data-table-wrapper"><table class="data-table" id="table-outros"><thead><tr><th>Data</th><th>Tipo</th><th>Classe</th><th>Grupo</th><th>Nome</th><th>Descrição</th><th>Valor</th><th>Ação</th></tr></thead><tbody></tbody></table></div></div>
 </div>
 
 </div></div>
@@ -54,8 +53,12 @@
 function renderTables(){renderTable('Clientes','table-clientes');renderTable('Funcionários','table-funcionarios');renderTable('Outros','table-outros')}
 function renderTable(cat,tid){
   const tbody=document.querySelector('#'+tid+' tbody'),data=getByCategory(cat);
-  if(!data.length){tbody.innerHTML='<tr><td colspan="6" class="empty-table"><i class="fa-regular fa-folder-open"></i> Nenhum dado para "'+cat+'"</td></tr>';return}
-  tbody.innerHTML=data.map(d=>'<tr><td>'+formatDateFull(d.data)+'</td><td><span class="tag-'+d.tipo.toLowerCase()+'">'+d.tipo+'</span></td><td>'+d.nome+'</td><td>'+(d.descricao||'—')+'</td><td>'+formatCurrency(d.valor)+'</td><td><button class="btn-remove" data-id="'+d.id+'"><i class="fa-solid fa-trash-can"></i></button></td></tr>').join('');
+  if(!data.length){tbody.innerHTML=`<tr><td colspan="${cat==='Outros'?8:6}" class="empty-table"><i class="fa-regular fa-folder-open"></i> Nenhum dado para "${cat}"</td></tr>`;return}
+  if(cat==='Outros'){
+    tbody.innerHTML=data.map(d=>`<tr><td>${formatDateFull(d.data)}</td><td><span class="tag-${d.tipo.toLowerCase()}">${d.tipo}</span></td><td>${d.classe||'—'}</td><td>${d.grupo||'—'}</td><td>${d.nome}</td><td>${d.descricao||'—'}</td><td>${formatCurrency(d.valor)}</td><td><button class="btn-remove" data-id="${d.id}"><i class="fa-solid fa-trash-can"></i></button></td></tr>`).join('');
+  }else{
+    tbody.innerHTML=data.map(d=>`<tr><td>${formatDateFull(d.data)}</td><td><span class="tag-${d.tipo.toLowerCase()}">${d.tipo}</span></td><td>${d.nome}</td><td>${d.descricao||'—'}</td><td>${formatCurrency(d.valor)}</td><td><button class="btn-remove" data-id="${d.id}"><i class="fa-solid fa-trash-can"></i></button></td></tr>`).join('');
+  }
   tbody.querySelectorAll('.btn-remove').forEach(b=>b.addEventListener('click',()=>{removeEntry(b.dataset.id);showToast('Removido!');renderTables()}));
 }
 document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>{
