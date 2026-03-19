@@ -68,23 +68,53 @@ function getPrevPeriodData(data, period) {
 function sumByType(data, tipo) { return data.filter(d => d.tipo === tipo).reduce((s, d) => s + d.valor, 0) }
 function calcGrowth(cur, prev) { if (prev === 0) return cur > 0 ? 100 : 0; return ((cur - prev) / prev * 100) }
 
+function aggregateData(data, groupBy) {
+  const g = {};
+  data.forEach(d => {
+    let key, sortKey;
+    const date = new Date(d.data + 'T12:00:00');
+    if (groupBy === 'year') {
+      key = String(date.getFullYear()); sortKey = key;
+    } else if (groupBy === 'month') {
+      const ms = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+      key = ms[date.getMonth()] + '/' + date.getFullYear().toString().slice(-2);
+      sortKey = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0');
+    } else if (groupBy === 'week') {
+      const ws = new Date(date); ws.setDate(ws.getDate() - ws.getDay());
+      key = String(ws.getDate()).padStart(2, '0') + '/' + String(ws.getMonth() + 1).padStart(2, '0');
+      sortKey = ws.getTime();
+    } else {
+      key = String(date.getDate()).padStart(2, '0') + '/' + String(date.getMonth() + 1).padStart(2, '0');
+      sortKey = d.data;
+    }
+    if (!g[sortKey]) g[sortKey] = { label: key, f: 0, d: 0, cases: 0, items: [] };
+    if (d.tipo === 'Faturamento') g[sortKey].f += d.valor;
+    if (d.tipo === 'Despesa') g[sortKey].d += d.valor;
+    g[sortKey].cases++;
+    g[sortKey].items.push(d);
+  });
+  const sortedKeys = Object.keys(g).sort();
+  return {
+    labels: sortedKeys.map(k => g[k].label),
+    map: (fn) => sortedKeys.map(k => fn(g[k]))
+  };
+}
+
 function getTimeSeries(data) {
-  const g = {}; data.forEach(d => { if (!g[d.data]) g[d.data] = { f: 0, d: 0 }; d.tipo === 'Faturamento' ? g[d.data].f += d.valor : g[d.data].d += d.valor });
-  const dates = Object.keys(g).sort();
-  return { labels: dates.map(formatDateShort), faturamento: dates.map(d => g[d].f), despesa: dates.map(d => g[d].d) }
+  const agg = aggregateData(data, 'day');
+  return { labels: agg.labels, faturamento: agg.map(x=>x.f), despesa: agg.map(x=>x.d) }
 }
 
 function getProfitSeries(data) {
-  const g = {}; data.forEach(d => { if (!g[d.data]) g[d.data] = { f: 0, d: 0 }; d.tipo === 'Faturamento' ? g[d.data].f += d.valor : g[d.data].d += d.valor });
-  const dates = Object.keys(g).sort();
+  const agg = aggregateData(data, 'day');
   return {
-    labels: dates.map(formatDateShort),
-    lucro: dates.map(d => g[d].f - g[d].d),
-    margem: dates.map(d => g[d].f > 0 ? ((g[d].f - g[d].d) / g[d].f * 100) : 0)
+    labels: agg.labels,
+    lucro: agg.map(x=>x.f - x.d),
+    margem: agg.map(x=>x.f > 0 ? ((x.f - x.d) / x.f * 100) : 0)
   }
 }
 
-function getTopClients(data, n = 5) {
+function getTopClients(data, n = 10) {
   const g = {}; data.filter(d => d.categoria === 'Clientes' && d.tipo === 'Faturamento').forEach(d => { g[d.nome] = (g[d.nome] || 0) + d.valor });
   return Object.entries(g).sort((a, b) => b[1] - a[1]).slice(0, n)
 }

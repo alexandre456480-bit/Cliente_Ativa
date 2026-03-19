@@ -1,101 +1,152 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Dashboard | Clientes</title>
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Dashboard | Clientes</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
+
 <body>
-<div class="blob blob-1"></div><div class="blob blob-2"></div><div class="blob blob-3"></div>
-<div class="cursor-glow"></div>
-<span class="fruit-deco" style="top:15%;left:5%">🥕</span><span class="fruit-deco" style="bottom:10%;right:4%">🍊</span><span class="fruit-deco" style="top:60%;right:6%">🥬</span>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="cursor-glow"></div>
+  <span class="fruit-deco" style="top:15%;left:5%">🥕</span><span class="fruit-deco"
+    style="bottom:10%;right:4%">🍊</span><span class="fruit-deco" style="top:60%;right:6%">🥬</span>
 
-<div class="container-wrapper"><div class="parent grid-clientes">
+  <div class="container-wrapper">
+    <div class="parent grid-clientes">
 
-<div class="card sidebar-card div1"><div class="sidebar-content">
-<h3 class="menu-title">Menu Principal</h3>
-<nav class="sidebar-nav">
-<a href="index.html" class="nav-item"><i class="fa-solid fa-chart-line"></i><span>Financeiro</span></a>
-<a href="Clientes.html" class="nav-item"><i class="fa-solid fa-users"></i><span>Clientes</span></a>
-<a href="Funcionarios.html" class="nav-item"><i class="fa-solid fa-user-tie"></i><span>Funcionários</span></a>
-<a href="Cadastro.html" class="nav-item"><i class="fa-solid fa-file-circle-plus"></i><span>Cadastro</span></a>
-<a href="dados.html" class="nav-item"><i class="fa-solid fa-database"></i><span>Dados</span></a>
-</nav><div class="sidebar-fruits">🍎 🥦 🍊 🥕 🍋</div>
-</div></div>
+      <div class="card sidebar-card div1">
+        <div class="sidebar-content">
+          <h3 class="menu-title">Menu Principal</h3>
+          <nav class="sidebar-nav">
+            <a href="index.html" class="nav-item"><i class="fa-solid fa-chart-line"></i><span>Financeiro</span></a>
+            <a href="Clientes.html" class="nav-item"><i class="fa-solid fa-users"></i><span>Clientes</span></a>
+            <a href="Funcionarios.html" class="nav-item"><i
+                class="fa-solid fa-user-tie"></i><span>Funcionários</span></a>
+            <a href="Cadastro.html" class="nav-item"><i
+                class="fa-solid fa-file-circle-plus"></i><span>Cadastro</span></a>
+            <a href="dados.html" class="nav-item"><i class="fa-solid fa-database"></i><span>Dados</span></a>
+          </nav>
+          <div class="sidebar-fruits">🍎 🥦 🍊 🥕 🍋</div>
+        </div>
+      </div>
 
-<div class="card header-card tilt div2">
-<div class="header-left"><h1><span class="header-highlight">Dashboard</span><span class="header-pipe">|</span>Controle Financeiro</h1></div>
-<div class="header-right">
-<div class="global-filter">
-<button class="filter-btn active" data-period="total">Total</button>
-<button class="filter-btn" data-period="month">Mês</button>
-<button class="filter-btn" data-period="week">Semana</button>
-<button class="filter-btn" data-period="day">Dia</button>
-</div>
-<span class="company-name">Ativa Distribuidora<span class="nome-glow"></span></span>
-</div></div>
+      <div class="card header-card tilt div2">
+        <div class="header-left">
+          <h1><span class="header-highlight">Dashboard</span><span class="header-pipe">|</span>Controle Financeiro</h1>
+        </div>
+        <div class="header-right">
+          <div class="global-filter">
+            <button class="filter-btn active" data-period="total">Total</button>
+            <button class="filter-btn" data-period="month">Mês</button>
+            <button class="filter-btn" data-period="week">Semana</button>
+            <button class="filter-btn" data-period="day">Dia</button>
+          </div>
+          <span class="company-name">Ativa Distribuidora<span class="nome-glow"></span></span>
+        </div>
+      </div>
 
-<div class="card card-kpi card-green div3">
-<div class="kpi-icon"><i class="fa-solid fa-building"></i></div>
-<div class="kpi-value" id="kpi-empresas">0</div>
-<div class="kpi-label">Empresas Cadastradas</div>
-<div class="kpi-growth positive" id="kpi-emp-g"><i class="fa-solid fa-users"></i><span>clientes únicos</span></div>
-</div>
+      <div class="card card-kpi card-green div3">
+        <div class="kpi-icon"><i class="fa-solid fa-building"></i></div>
+        <div class="kpi-value" id="kpi-empresas">0</div>
+        <div class="kpi-label">Empresas Cadastradas</div>
+        <div class="kpi-growth positive" id="kpi-emp-g"><i class="fa-solid fa-users"></i><span>clientes únicos</span>
+        </div>
+      </div>
 
-<div class="card card-kpi card-blue div4">
-<div class="kpi-icon"><i class="fa-solid fa-receipt"></i></div>
-<div class="kpi-value" id="kpi-pedidos">0</div>
-<div class="kpi-label">Total de Pedidos</div>
-<div class="kpi-growth" id="kpi-ped-g"><i class="fa-solid fa-arrow-trend-up"></i><span>0</span><span class="kpi-period">vs mês ant.</span></div>
-</div>
+      <div class="card card-kpi card-blue div4">
+        <div class="kpi-icon"><i class="fa-solid fa-receipt"></i></div>
+        <div class="kpi-value" id="kpi-pedidos">0</div>
+        <div class="kpi-label">Total de Pedidos</div>
+        <div class="kpi-growth" id="kpi-ped-g"><i class="fa-solid fa-arrow-trend-up"></i><span>0</span><span
+            class="kpi-period">vs mês ant.</span></div>
+      </div>
 
-<div class="card funnel-card div5">
-<div class="funnel-header"><span class="funnel-title"><i class="fa-solid fa-filter" style="color:var(--accent);margin-right:5px"></i>Top 5 Empresas</span></div>
-<div class="funnel-container" id="funnel-container"></div>
-</div>
+      <div class="card funnel-card div5">
+        <div class="funnel-header" style="justify-content:space-between">
+          <div><span class="funnel-title"><i class="fa-solid fa-ranking-star"
+                style="color:var(--gold);margin-right:5px"></i>Top 10 Clientes</span></div>
+          <input type="text" id="funnel-search" class="header-filter" placeholder="Pesquisar..."
+            style="width:100px;padding:2px 5px;font-size:0.7rem">
+        </div>
+        <div class="funnel-container" id="funnel-container" style="overflow-y:auto;padding-right:5px"></div>
+      </div>
 
-<div class="card chart-card div6">
-<div class="chart-header"><span class="chart-title"><i class="fa-solid fa-chart-area" style="color:var(--blu);margin-right:5px"></i>Pedidos ao Longo do Tempo</span></div>
-<div class="chart-body"><canvas id="ordersChart"></canvas></div>
-</div>
+      <div class="card chart-card div6">
+        <div class="chart-header">
+          <span class="chart-title"><i class="fa-solid fa-chart-area"
+              style="color:var(--blu);margin-right:5px"></i>Pedidos ao Longo do Tempo</span>
+          <select id="orders-time-filter" class="header-filter">
+            <option value="day">Dias</option>
+            <option value="week">Semanas</option>
+            <option value="month" selected>Meses</option>
+            <option value="year">Anos</option>
+          </select>
+        </div>
+        <div class="chart-body"><canvas id="ordersChart"></canvas></div>
+      </div>
 
-</div></div>
+    </div>
+  </div>
 
-<script src="data.js"></script><script src="script.js"></script>
-<script>
-let ordersChart,gPeriod='total';
-const funnelColors=['#059669','#10B981','#34D399','#6EE7B7','#A7F3D0'];
-function refreshDashboard(){
-  const all=loadData(),fd=filterByPeriod(all,gPeriod);
-  const empresas=getDistinctNames(fd,'Clientes');const orders=fd.filter(d=>d.categoria==='Clientes').length;
-  document.getElementById('kpi-empresas').textContent=empresas.length;
-  document.getElementById('kpi-pedidos').textContent=orders;
-  const curM=filterByPeriod(all,'month').filter(d=>d.categoria==='Clientes').length;
-  const prevM=getPrevPeriodData(all,'month').filter(d=>d.categoria==='Clientes').length;
-  const og=curM-prevM;const el=document.getElementById('kpi-ped-g');
-  el.className='kpi-growth '+(og>=0?'positive':'negative');
-  el.innerHTML=`<i class="fa-solid fa-arrow-trend-${og>=0?'up':'down'}"></i><span>${og>=0?'+':''}${og}</span><span class="kpi-period">vs mês ant.</span>`;
-  buildFunnel(fd);updateOrders(fd);
-}
-function buildFunnel(fd){
-  const top=getTopClients(fd,5),c=document.getElementById('funnel-container'),tf=sumByType(fd.filter(d=>d.categoria==='Clientes'),'Faturamento');
-  if(!top.length){c.innerHTML='<div class="empty-table"><i class="fa-regular fa-folder-open"></i> Sem dados</div>';return}
-  const mx=top[0][1];
-  c.innerHTML=top.map(([n,v],i)=>`<div class="funnel-item"><span class="funnel-rank">${i+1}º</span><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${mx>0?(v/mx*100):0}%;background:${funnelColors[i]}">${tf>0?(v/tf*100).toFixed(1):0}%</div></div><div class="funnel-info"><span class="funnel-name">${n.length>16?n.slice(0,14)+'…':n}</span><span class="funnel-val">${formatCurrency(v)}</span></div></div>`).join('');
-}
-function updateOrders(fd){
-  const o=getOrdersSeries(fd);
-  if(ordersChart){ordersChart.data.labels=o.labels;ordersChart.data.datasets[0].data=o.values;ordersChart.update();return}
-  ordersChart=new Chart(document.getElementById('ordersChart'),{type:'line',data:{labels:o.labels,datasets:[
-    {label:'Pedidos',data:o.values,borderColor:'#3B82F6',backgroundColor:'rgba(59,130,246,.1)',fill:true,tension:.4,pointRadius:4,pointBackgroundColor:'#3B82F6',borderWidth:2}
-  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},
-    plugins:{legend:{display:false},tooltip:{backgroundColor:'#1E293B',cornerRadius:10,padding:10,bodyFont:{size:10,family:'Inter'},callbacks:{label:c=>c.raw+' pedido'+(c.raw!==1?'s':'')}}},
-    scales:{x:{grid:{display:false},ticks:{font:{size:9,family:'Inter'},color:'#94A3B8'}},y:{grid:{color:'#F1F5F9'},beginAtZero:true,ticks:{font:{size:9,family:'Inter'},color:'#94A3B8',stepSize:1}}}}})
-}
-document.querySelectorAll('.filter-btn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');gPeriod=b.dataset.period;refreshDashboard()}));
-document.addEventListener('DOMContentLoaded',()=>setTimeout(refreshDashboard,100));
-window.addEventListener('storage',e=>{if(e.key===DATA_KEY)refreshDashboard()});
-</script>
-</body></html>
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+  <script>
+    let ordersChart, gPeriod = 'total';
+    let clientSearch = '', ordersGroup = 'month';
+    document.getElementById('funnel-search').addEventListener('input', e => { clientSearch = e.target.value.toLowerCase(); buildFunnel(filterByPeriod(loadData(), gPeriod)); });
+    document.getElementById('orders-time-filter').addEventListener('change', e => { ordersGroup = e.target.value; updateOrders(loadData()); });
+
+    const funnelColors = ['#059669', '#10B981', '#34D399', '#6EE7B7', '#A7F3D0', '#D1FAE5', '#D1FAE5', '#D1FAE5', '#D1FAE5', '#D1FAE5'];
+    function refreshDashboard() {
+      const all = loadData(), fd = filterByPeriod(all, gPeriod);
+      const empresas = getDistinctNames(fd, 'Clientes'); const orders = fd.filter(d => d.categoria === 'Clientes').length;
+      document.getElementById('kpi-empresas').textContent = empresas.length;
+      document.getElementById('kpi-pedidos').textContent = orders;
+      const curM = filterByPeriod(all, 'month').filter(d => d.categoria === 'Clientes').length;
+      const prevM = getPrevPeriodData(all, 'month').filter(d => d.categoria === 'Clientes').length;
+      const og = curM - prevM; const el = document.getElementById('kpi-ped-g');
+      el.className = 'kpi-growth ' + (og >= 0 ? 'positive' : 'negative');
+      el.innerHTML = `<i class="fa-solid fa-arrow-trend-${og >= 0 ? 'up' : 'down'}"></i><span>${og >= 0 ? '+' : ''}${og}</span><span class="kpi-period">vs mês ant.</span>`;
+      buildFunnel(fd); updateOrders(all);
+    }
+    function buildFunnel(fd) {
+      let top = getTopClients(fd, 10);
+      if (clientSearch.trim()) {
+        const allC = getTopClients(fd, 9999);
+        const m = allC.filter(c => c[0].toLowerCase().includes(clientSearch));
+        if (m.length > 0) top = m.slice(0, 10);
+      }
+      const c = document.getElementById('funnel-container'), tf = sumByType(fd.filter(d => d.categoria === 'Clientes'), 'Faturamento');
+      if (!top.length) { c.innerHTML = '<div class="empty-table"><i class="fa-regular fa-folder-open"></i> Sem dados</div>'; return }
+      const mx = top[0] ? top[0][1] : 0;
+      c.innerHTML = top.map(([n, v], i) => `<div class="funnel-item"><span class="funnel-rank">${i + 1}º</span><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${mx > 0 ? (v / mx * 100) : 0}%;background:${funnelColors[i] || funnelColors[0]}">${tf > 0 ? (v / tf * 100).toFixed(1) : 0}%</div></div><div class="funnel-info"><span class="funnel-name" title="${n}">${n.length > 18 ? n.slice(0, 16) + '…' : n}</span><span class="funnel-val">${formatCurrency(v)}</span></div></div>`).join('');
+    }
+    function updateOrders(data) {
+      const agg = aggregateData(data.filter(d => d.categoria === 'Clientes'), ordersGroup);
+      if (ordersChart) { ordersChart.data.labels = agg.labels; ordersChart.data.datasets[0].data = agg.map(x => x.cases); ordersChart.update(); return }
+      ordersChart = new Chart(document.getElementById('ordersChart'), {
+        type: 'line', data: {
+          labels: agg.labels, datasets: [
+            { label: 'Pedidos', data: agg.map(x => x.cases), borderColor: '#3B82F6', backgroundColor: 'rgba(59,130,246,.1)', fill: true, tension: .4, pointRadius: 4, pointBackgroundColor: '#3B82F6', borderWidth: 2 }
+          ]
+        }, options: {
+          responsive: true, maintainAspectRatio: false, interaction: { intersect: false, mode: 'index' },
+          plugins: { legend: { display: false }, tooltip: { backgroundColor: '#1E293B', cornerRadius: 10, padding: 10, bodyFont: { size: 10, family: 'Inter' }, callbacks: { label: c => c.raw + ' pedido' + (c.raw !== 1 ? 's' : '') } } },
+          scales: { x: { grid: { display: false }, ticks: { font: { size: 9, family: 'Inter' }, color: '#94A3B8' } }, y: { grid: { color: '#F1F5F9' }, beginAtZero: true, ticks: { font: { size: 9, family: 'Inter' }, color: '#94A3B8', stepSize: 1 } } }
+        }
+      })
+    }
+    document.querySelectorAll('.filter-btn').forEach(b => b.addEventListener('click', () => { document.querySelectorAll('.filter-btn').forEach(x => x.classList.remove('active')); b.classList.add('active'); gPeriod = b.dataset.period; refreshDashboard() }));
+    document.addEventListener('DOMContentLoaded', () => setTimeout(refreshDashboard, 100));
+    window.addEventListener('storage', e => { if (e.key === DATA_KEY) refreshDashboard() });
+  </script>
+</body>
+
+</html>

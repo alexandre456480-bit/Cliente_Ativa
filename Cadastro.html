@@ -70,7 +70,7 @@ function checkOutros(){
 
 catSel.addEventListener('change',()=>{
   const c=catSel.value;
-  tipoSel.innerHTML=c==='Clientes'?'<option value="Faturamento" selected>Faturamento</option>':'<option value="" disabled selected>Selecione...</option><option value="Faturamento">Faturamento</option><option value="Despesa">Despesa</option>';
+  tipoSel.innerHTML='<option value="" disabled selected>Selecione...</option><option value="Faturamento">Faturamento</option><option value="Despesa">Despesa</option>';
   if(c==='Funcionários'){const s=document.createElement('select');s.id='campo-nome';s.required=true;s.innerHTML='<option value="" disabled selected>Selecione...</option>'+funcs.map(f=>`<option value="${f}">${f}</option>`).join('');document.getElementById('campo-nome').replaceWith(s)}
   else{resetNome()}
   checkOutros();
