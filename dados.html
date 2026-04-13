@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Dashboard | Dados</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+  <!-- Particle Background -->
+  <script src="background-particles.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <div class="container-wrapper">
+    <div class="main-glass-wrapper">
+      <div class="parent grid-dados">
+
+        <div class="card sidebar-card div1">
+          <div class="sidebar-content">
+            <h3 class="menu-title">Menu Principal</h3>
+            <nav class="sidebar-nav">
+              <a href="index.html" class="nav-item"><i data-lucide="layout-dashboard"
+                  class="lucide-3d"></i><span>Financeiro</span></a>
+              <a href="Clientes.html" class="nav-item"><i data-lucide="users"
+                  class="lucide-3d"></i><span>Clientes</span></a>
+              <a href="Funcionarios.html" class="nav-item"><i data-lucide="user-cog"
+                  class="lucide-3d"></i><span>Funcionários</span></a>
+              <a href="Cadastro.html" class="nav-item"><i data-lucide="file-plus-2"
+                  class="lucide-3d"></i><span>Cadastro</span></a>
+              <a href="dados.html" class="nav-item active"><i data-lucide="database"
+                  class="lucide-3d"></i><span>Dados</span></a>
+            </nav>
+            <a href="#" onclick="logout();return false" class="nav-item nav-logout">
+              <i data-lucide="log-out" class="lucide-3d"></i><span>Sair</span>
+            </a>
+            <div class="sidebar-fruits">
+              <i data-lucide="apple" class="lucide-3d" style="opacity:0.4"></i>
+              <i data-lucide="leaf" class="lucide-3d" style="opacity:0.4"></i>
+              <i data-lucide="citrus" class="lucide-3d" style="opacity:0.4"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="card header-card tilt div2">
+          <div class="header-left">
+            <h1><span class="header-highlight">Dashboard</span><span class="header-pipe">|</span>Controle Financeiro
+            </h1>
+          </div>
+          <div class="header-right">
+            <div class="logo-container">
+              <img src="ativa.webp" alt="Ativa Distribuidora" class="logo-img">
+            </div>
+          </div>
+        </div>
+
+        <div class="card dados-card div3">
+          <div class="dados-header">
+            <h2><i data-lucide="database" class="lucide-3d" style="color:var(--accent);margin-right:10px"></i> Dados
+              Cadastrados</h2>
+            <div class="dados-actions">
+              <button class="btn-icon" id="btn-import-csv"><i data-lucide="upload" style="width:14px"></i> Importar
+                CSV</button>
+              <button class="btn-icon" id="btn-export-csv"><i data-lucide="download" style="width:14px"></i> Exportar
+                CSV</button>
+              <input type="file" id="file-input-csv" class="file-input-hidden" accept=".csv,.txt">
+            </div>
+          </div>
+          <div class="tabs-container">
+            <button class="tab-btn active" data-tab="clientes"><i data-lucide="users" style="width:14px"></i>
+              Clientes</button>
+            <button class="tab-btn" data-tab="funcionarios"><i data-lucide="user-cog" style="width:14px"></i>
+              Funcionários</button>
+            <button class="tab-btn" data-tab="outros"><i data-lucide="layers" style="width:14px"></i> Outros</button>
+          </div>
+          <div class="tab-panel active" id="panel-clientes">
+            <div class="data-table-wrapper">
+              <table class="data-table" id="table-clientes">
+                <thead>
+                  <tr>
+                    <th>Data</th>
+                    <th>Tipo</th>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    <th>Valor</th>
+                    <th>Ação</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="tab-panel" id="panel-funcionarios">
+            <div class="data-table-wrapper">
+              <table class="data-table" id="table-funcionarios">
+                <thead>
+                  <tr>
+                    <th>Data</th>
+                    <th>Tipo</th>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    <th>Valor</th>
+                    <th>Ação</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="tab-panel" id="panel-outros">
+            <div class="data-table-wrapper">
+              <table class="data-table" id="table-outros">
+                <thead>
+                  <tr>
+                    <th>Data</th>
+                    <th>Tipo</th>
+                    <th>Classe</th>
+                    <th>Grupo</th>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    <th>Valor</th>
+                    <th>Ação</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+  <script>
+    lucide.createIcons();
+    function renderTables() { renderTable('Clientes', 'table-clientes'); renderTable('Funcionários', 'table-funcionarios'); renderTable('Outros', 'table-outros') }
+    function renderTable(cat, tid) {
+      const tbody = document.querySelector('#' + tid + ' tbody'), data = getByCategory(cat);
+      if (!data.length) { tbody.innerHTML = `<tr><td colspan="${cat === 'Outros' ? 8 : 6}" class="empty-table">Nenhum dado para "${cat}"</td></tr>`; return }
+      if (cat === 'Outros') {
+        tbody.innerHTML = data.map(d => `<tr><td>${formatDateFull(d.data)}</td><td><span class="tag-${d.tipo.toLowerCase()}">${d.tipo}</span></td><td>${d.classe || '—'}</td><td>${d.grupo || '—'}</td><td>${d.nome}</td><td>${d.descricao || '—'}</td><td>${formatCurrency(d.valor)}</td><td><button class="btn-remove" data-id="${d.id}">Remover</button></td></tr>`).join('');
+      } else {
+        tbody.innerHTML = data.map(d => `<tr><td>${formatDateFull(d.data)}</td><td><span class="tag-${d.tipo.toLowerCase()}">${d.tipo}</span></td><td>${d.nome}</td><td>${d.descricao || '—'}</td><td>${formatCurrency(d.valor)}</td><td><button class="btn-remove" data-id="${d.id}">Remover</button></td></tr>`).join('');
+      }
+      tbody.querySelectorAll('.btn-remove').forEach(b => b.addEventListener('click', () => { removeEntry(b.dataset.id); renderTables() }));
+    }
+    document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active')); document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      b.classList.add('active'); document.getElementById('panel-' + b.dataset.tab).classList.add('active');
+    }));
+    document.getElementById('btn-import-csv').addEventListener('click', () => document.getElementById('file-input-csv').click());
+    document.getElementById('file-input-csv').addEventListener('change', async e => { const f = e.target.files[0]; if (!f) return; try { const c = await importCSV(f); renderTables() } catch (err) { } e.target.value = '' });
+    document.getElementById('btn-export-csv').addEventListener('click', () => exportCSV(null));
+    window.addEventListener('dataReady', renderTables);
+  </script>
+
+</body>
+
+</html>

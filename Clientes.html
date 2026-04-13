@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Dashboard | Clientes</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+  <!-- Particle Background -->
+  <script src="background-particles.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <div class="container-wrapper">
+    <div class="main-glass-wrapper">
+      <div class="parent grid-clientes">
+
+        <div class="card sidebar-card div1">
+          <div class="sidebar-content">
+            <h3 class="menu-title">Menu Principal</h3>
+            <nav class="sidebar-nav">
+              <a href="index.html" class="nav-item"><i data-lucide="layout-dashboard"
+                  class="lucide-3d"></i><span>Financeiro</span></a>
+              <a href="Clientes.html" class="nav-item active"><i data-lucide="users"
+                  class="lucide-3d"></i><span>Clientes</span></a>
+              <a href="Funcionarios.html" class="nav-item"><i data-lucide="user-cog"
+                  class="lucide-3d"></i><span>Funcionários</span></a>
+              <a href="Cadastro.html" class="nav-item"><i data-lucide="file-plus-2"
+                  class="lucide-3d"></i><span>Cadastro</span></a>
+              <a href="dados.html" class="nav-item"><i data-lucide="database"
+                  class="lucide-3d"></i><span>Dados</span></a>
+            </nav>
+            <a href="#" onclick="logout();return false" class="nav-item nav-logout">
+              <i data-lucide="log-out" class="lucide-3d"></i><span>Sair</span>
+            </a>
+            <div class="sidebar-fruits">
+              <i data-lucide="apple" class="lucide-3d" style="opacity:0.4"></i>
+              <i data-lucide="leaf" class="lucide-3d" style="opacity:0.4"></i>
+              <i data-lucide="citrus" class="lucide-3d" style="opacity:0.4"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="card header-card tilt div2">
+          <div class="header-left">
+            <h1><span class="header-highlight">Dashboard</span><span class="header-pipe">|</span>Controle Financeiro
+            </h1>
+          </div>
+          <div class="header-right">
+            <div class="global-filter">
+              <button class="filter-btn active" data-period="total">Total</button>
+              <button class="filter-btn" data-period="month">Mês</button>
+              <button class="filter-btn" data-period="week">Semana</button>
+              <button class="filter-btn" data-period="day">Dia</button>
+            </div>
+            <div class="logo-container">
+              <img src="ativa.webp" alt="Ativa Distribuidora" class="logo-img">
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-kpi card-green div3">
+          <div class="kpi-icon"><i data-lucide="building-2" class="lucide-3d"></i></div>
+          <div class="kpi-value" id="kpi-empresas">0</div>
+          <div class="kpi-label">Empresas Cadastradas</div>
+          <div class="kpi-growth positive" id="kpi-emp-g"><span>clientes únicos</span></div>
+        </div>
+
+        <div class="card card-kpi card-blue div4">
+          <div class="kpi-icon"><i data-lucide="shopping-cart" class="lucide-3d"></i></div>
+          <div class="kpi-value" id="kpi-pedidos">0</div>
+          <div class="kpi-label">Total de Pedidos</div>
+          <div class="kpi-growth" id="kpi-ped-g"><span>0</span><span class="kpi-period">vs mês ant.</span></div>
+        </div>
+
+        <div class="card funnel-card div5">
+          <div class="funnel-header" style="justify-content:space-between">
+            <div><span class="funnel-title"><i data-lucide="award" class="lucide-3d"
+                  style="color:var(--accent);margin-right:8px"></i>Top 10 Clientes</span></div>
+            <input type="text" id="funnel-search" class="header-filter" placeholder="Pesquisar..."
+              style="width:100px;padding:2px 5px;font-size:0.7rem">
+          </div>
+          <div class="funnel-container" id="funnel-container" style="overflow-y:auto;padding-right:5px"></div>
+        </div>
+
+        <div class="card chart-card div6">
+          <div class="chart-header">
+            <span class="chart-title"><i data-lucide="line-chart" class="lucide-3d"
+                style="color:var(--accent);margin-right:8px"></i>Pedidos ao Longo do Tempo</span>
+            <select id="orders-time-filter" class="header-filter">
+              <option value="day">Dias</option>
+              <option value="week">Semanas</option>
+              <option value="month" selected>Meses</option>
+              <option value="year">Anos</option>
+            </select>
+          </div>
+          <div class="chart-body"><canvas id="ordersChart"></canvas></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+  <script>
+    lucide.createIcons();
+    let ordersChart, gPeriod = 'total';
+    let clientSearch = '', ordersGroup = 'month';
+    document.getElementById('funnel-search').addEventListener('input', e => { clientSearch = e.target.value.toLowerCase(); buildFunnel(filterByPeriod(loadData(), gPeriod)); });
+    document.getElementById('orders-time-filter').addEventListener('change', e => { ordersGroup = e.target.value; updateOrders(loadData()); });
+
+    const funnelColors = ['#8EB69B', '#7DA68B', '#6D967B', '#5C866B', '#4C765B', '#3C864B', '#2C864B', '#1C864B', '#0C864B', '#05362B'];
+    function refreshDashboard() {
+      const all = loadData(), fd = filterByPeriod(all, gPeriod);
+      const empresas = getDistinctNames(fd, 'Clientes'); const orders = fd.filter(d => d.categoria === 'Clientes').length;
+      document.getElementById('kpi-empresas').textContent = empresas.length;
+      document.getElementById('kpi-pedidos').textContent = orders;
+      const curM = filterByPeriod(all, 'month').filter(d => d.categoria === 'Clientes').length;
+      const prevM = getPrevPeriodData(all, 'month').filter(d => d.categoria === 'Clientes').length;
+      const og = curM - prevM; const el = document.getElementById('kpi-ped-g');
+      el.className = 'kpi-growth ' + (og >= 0 ? 'positive' : 'negative');
+      el.innerHTML = `<span>${og >= 0 ? '+' : ''}${og}</span><span class="kpi-period">vs mês ant.</span>`;
+      buildFunnel(fd); updateOrders(all);
+    }
+
+    function buildFunnel(fd) {
+      let top = getTopClients(fd, 10);
+      if (clientSearch.trim()) {
+        const allC = getTopClients(fd, 9999);
+        const m = allC.filter(c => c[0].toLowerCase().includes(clientSearch));
+        if (m.length > 0) top = m.slice(0, 10);
+      }
+      const c = document.getElementById('funnel-container'), tf = sumByType(fd.filter(d => d.categoria === 'Clientes'), 'Faturamento');
+      if (!top.length) { c.innerHTML = '<div class="empty-table"><i class="fa-regular fa-folder-open"></i> Sem dados</div>'; return }
+      const mx = top[0] ? top[0][1] : 0;
+      c.innerHTML = top.map(([n, v], i) => `<div class="funnel-item"><span class="funnel-rank">${i + 1}º</span><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${mx > 0 ? (v / mx * 100) : 0}%;background:${funnelColors[i] || funnelColors[0]}">${tf > 0 ? (v / tf * 100).toFixed(1) : 0}%</div></div><div class="funnel-info"><span class="funnel-name" title="${n}">${n.length > 18 ? n.slice(0, 16) + '…' : n}</span><span class="funnel-val">${formatCurrency(v)}</span></div></div>`).join('');
+    }
+    function updateOrders(data) {
+      const agg = aggregateData(data.filter(d => d.categoria === 'Clientes'), ordersGroup);
+      if (ordersChart) { ordersChart.data.labels = agg.labels; ordersChart.data.datasets[0].data = agg.map(x => x.cases); ordersChart.update(); return }
+      const ctx = document.getElementById('ordersChart').getContext('2d');
+      const grad = ctx.createLinearGradient(0, 0, 0, 300); grad.addColorStop(0, 'rgba(0, 240, 255, 0.25)'); grad.addColorStop(1, 'transparent');
+      ordersChart = new Chart(ctx, {
+        type: 'line', data: {
+          labels: agg.labels, datasets: [
+            { label: 'Pedidos', data: agg.map(x => x.cases), borderColor: '#00f0ff', backgroundColor: grad, fill: true, tension: .4, pointRadius: 4, pointBackgroundColor: '#00f0ff', borderWidth: 3 }
+          ]
+        }, options: {
+          responsive: true, maintainAspectRatio: false, interaction: { intersect: false, mode: 'index' },
+          plugins: { legend: { display: false }, tooltip: { backgroundColor: '#1E293B', cornerRadius: 10, padding: 10, bodyFont: { size: 10, family: 'Inter' }, callbacks: { label: c => c.raw + ' pedido' + (c.raw !== 1 ? 's' : '') } } },
+          scales: { x: { grid: { display: false }, ticks: { font: { size: 9, family: 'Inter' }, color: '#94A3B8' } }, y: { grid: { display: false }, beginAtZero: true, ticks: { font: { size: 9, family: 'Inter' }, color: '#94A3B8', stepSize: 1 } } }
+        }
+      })
+    }
+    document.querySelectorAll('.filter-btn').forEach(b => b.addEventListener('click', () => { document.querySelectorAll('.filter-btn').forEach(x => x.classList.remove('active')); b.classList.add('active'); gPeriod = b.dataset.period; refreshDashboard() }));
+    window.addEventListener('dataReady', () => setTimeout(refreshDashboard, 100));
+  </script>
+</body>
+
+</html>

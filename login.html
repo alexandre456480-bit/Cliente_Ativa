@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Login | Ativa Distribuidora</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body class="login-body">
+  <script src="background-particles.js"></script>
+
+  <div class="login-wrapper">
+    <div class="login-card">
+      <div class="login-logo">
+        <img src="ativa.webp" alt="Ativa Distribuidora" class="login-logo-img">
+      </div>
+      <div class="login-header">
+        <h1 class="login-title">Bem-vindo</h1>
+        <p class="login-subtitle">Acesse o painel de controle</p>
+      </div>
+      <form id="loginForm" class="login-form" autocomplete="off">
+        <div class="login-field">
+          <div class="login-field-icon"><i class="fa-solid fa-user"></i></div>
+          <input type="text" id="login-user" placeholder="Usuário" required autocomplete="username">
+        </div>
+        <div class="login-field">
+          <div class="login-field-icon"><i class="fa-solid fa-lock"></i></div>
+          <input type="password" id="login-pass" placeholder="Senha" required autocomplete="current-password">
+          <button type="button" class="login-eye" id="toggle-pass" tabindex="-1">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+        <div class="login-error" id="login-error"></div>
+        <button type="submit" class="login-btn" id="login-btn">
+          <span class="login-btn-text">Entrar</span>
+          <span class="login-btn-loader" style="display:none"><i class="fa-solid fa-spinner fa-spin"></i></span>
+        </button>
+      </form>
+      <div class="login-footer">
+        <span>🍊 🍋 🍎</span>
+        <p>Ativa Distribuidora &copy; 2026</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Se já estiver logado, redireciona
+    (async () => {
+      const token = localStorage.getItem('ativa_token');
+      if (token) {
+        try {
+          const res = await fetch('/api/verify', { headers: { 'Authorization': 'Bearer ' + token } });
+          if (res.ok) { window.location.href = 'index.html'; return; }
+        } catch (e) { }
+        localStorage.removeItem('ativa_token');
+      }
+    })();
+
+    // Toggle senha
+    document.getElementById('toggle-pass').addEventListener('click', () => {
+      const inp = document.getElementById('login-pass');
+      const icon = document.querySelector('#toggle-pass i');
+      if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fa-solid fa-eye-slash'; }
+      else { inp.type = 'password'; icon.className = 'fa-solid fa-eye'; }
+    });
+
+    // Submit login
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errEl = document.getElementById('login-error');
+      const btn = document.getElementById('login-btn');
+      const btnText = btn.querySelector('.login-btn-text');
+      const btnLoader = btn.querySelector('.login-btn-loader');
+
+      errEl.textContent = '';
+      btn.disabled = true;
+      btnText.style.display = 'none';
+      btnLoader.style.display = 'inline-block';
+
+      const username = document.getElementById('login-user').value.trim();
+      const password = document.getElementById('login-pass').value;
+
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          errEl.textContent = data.error || 'Erro ao fazer login';
+          btn.disabled = false;
+          btnText.style.display = 'inline';
+          btnLoader.style.display = 'none';
+          // Shake animation
+          btn.classList.add('shake');
+          setTimeout(() => btn.classList.remove('shake'), 500);
+          return;
+        }
+
+        localStorage.setItem('ativa_token', data.token);
+        localStorage.setItem('ativa_user', data.username);
+
+        // Animação de sucesso
+        btn.classList.add('success');
+        btnLoader.style.display = 'none';
+        btnText.textContent = '✓ Autenticado';
+        btnText.style.display = 'inline';
+
+        setTimeout(() => { window.location.href = 'index.html'; }, 600);
+      } catch (err) {
+        errEl.textContent = 'Erro de conexão com o servidor';
+        btn.disabled = false;
+        btnText.style.display = 'inline';
+        btnLoader.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+
+</html>

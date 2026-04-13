@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Dashboard | Funcionários</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+  <!-- Particle Background -->
+  <script src="background-particles.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <div class="container-wrapper">
+    <div class="main-glass-wrapper">
+      <div class="parent grid-funcionarios">
+
+        <div class="card sidebar-card div1">
+          <div class="sidebar-content">
+            <h3 class="menu-title">Menu Principal</h3>
+            <nav class="sidebar-nav">
+              <a href="index.html" class="nav-item"><i data-lucide="layout-dashboard"
+                  class="lucide-3d"></i><span>Financeiro</span></a>
+              <a href="Clientes.html" class="nav-item"><i data-lucide="users"
+                  class="lucide-3d"></i><span>Clientes</span></a>
+              <a href="Funcionarios.html" class="nav-item active"><i data-lucide="user-cog"
+                  class="lucide-3d"></i><span>Funcionários</span></a>
+              <a href="Cadastro.html" class="nav-item"><i data-lucide="file-plus-2"
+                  class="lucide-3d"></i><span>Cadastro</span></a>
+              <a href="dados.html" class="nav-item"><i data-lucide="database"
+                  class="lucide-3d"></i><span>Dados</span></a>
+            </nav>
+            <a href="#" onclick="logout();return false" class="nav-item nav-logout">
+              <i data-lucide="log-out" class="lucide-3d"></i><span>Sair</span>
+            </a>
+            <div class="sidebar-fruits">
+              <i data-lucide="apple" class="lucide-3d" style="opacity:0.4"></i>
+              <i data-lucide="leaf" class="lucide-3d" style="opacity:0.4"></i>
+              <i data-lucide="citrus" class="lucide-3d" style="opacity:0.4"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="card header-card tilt div2">
+          <div class="header-left">
+            <h1><span class="header-highlight">Dashboard</span><span class="header-pipe">|</span>Controle Financeiro
+            </h1>
+          </div>
+          <div class="header-right">
+            <div class="global-filter">
+              <button class="filter-btn active" data-period="total">Total</button>
+              <button class="filter-btn" data-period="month">Mês</button>
+              <button class="filter-btn" data-period="week">Semana</button>
+              <button class="filter-btn" data-period="day">Dia</button>
+            </div>
+            <div class="logo-container">
+              <img src="ativa.webp" alt="Ativa Distribuidora" class="logo-img">
+            </div>
+          </div>
+        </div>
+
+        <div class="card chart-card div3">
+          <div class="chart-header" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:5px">
+            <div style="display:flex;align-items:center">
+              <span class="chart-title"><i data-lucide="activity" class="lucide-3d"
+                  style="color:var(--accent);margin-right:8px"></i>Evolução de Despesas</span>
+              <select id="func-desp-filter" class="header-filter" style="margin-left:5px;width:70px;padding:2px 4px">
+                <option value="Ambos" selected>Ambos</option>
+                <option value="Funcionários">Func.</option>
+                <option value="Outros">Outros</option>
+              </select>
+            </div>
+            <select id="func-time-filter" class="header-filter" style="width:70px;padding:2px 4px">
+              <option value="day">Dias</option>
+              <option value="week">Semanas</option>
+              <option value="month" selected>Meses</option>
+              <option value="year">Anos</option>
+            </select>
+          </div>
+          <div class="chart-body"><canvas id="barFatChart"></canvas></div>
+        </div>
+
+        <div class="card chart-card div4">
+          <div class="chart-header"><span class="chart-title"><i data-lucide="pie-chart" class="lucide-3d"
+                style="color:var(--accent);margin-right:8px"></i>Pedidos por Funcionário</span></div>
+          <div class="chart-body"><canvas id="pieChart"></canvas></div>
+        </div>
+
+        <div class="card chart-card div5">
+          <div class="chart-header"><span class="chart-title"><i data-lucide="bar-chart-3" class="lucide-3d"
+                style="color:var(--accent);margin-right:8px"></i>Despesas por Funcionário</span></div>
+          <div class="chart-body"><canvas id="barDespChart"></canvas></div>
+        </div>
+
+        <div class="card card-kpi card-red div6">
+          <div class="kpi-icon"><i data-lucide="receipt" class="lucide-3d"></i></div>
+          <div class="kpi-value" id="kpi-desp-func">R$ 0</div>
+          <div class="kpi-label">Despesa Funcionários</div>
+          <div class="kpi-growth" id="kpi-desp-func-g"><span>0%</span><span class="kpi-period">vs mês ant.</span></div>
+        </div>
+
+        <div class="card funnel-card div7">
+          <div class="funnel-header"><span class="funnel-title"><i data-lucide="car" class="lucide-3d"
+                style="color:var(--accent);margin-right:8px"></i>Transporte</span></div>
+          <div class="funnel-container" id="funnel-transporte"></div>
+        </div>
+        <div class="card funnel-card div8">
+          <div class="funnel-header"><span class="funnel-title"><i data-lucide="utensils" class="lucide-3d"
+                style="color:var(--accent);margin-right:8px"></i>Alimentação</span></div>
+          <div class="funnel-container" id="funnel-alimentacao"></div>
+        </div>
+        <div class="card funnel-card div9">
+          <div class="funnel-header"><span class="funnel-title"><i data-lucide="building" class="lucide-3d"
+                style="color:var(--accent);margin-right:8px"></i>Infraestrutura</span></div>
+          <div class="funnel-container" id="funnel-infraestrutura"></div>
+        </div>
+        <div class="card funnel-card div10">
+          <div class="funnel-header"><span class="funnel-title"><i data-lucide="package" class="lucide-3d"
+                style="color:var(--accent);margin-right:8px"></i>Outras Despesas</span></div>
+          <div class="funnel-container" id="funnel-outras"></div>
+        </div>
+
+        <div class="card summary-card div11">
+          <div class="summary-title"><i data-lucide="file-text" class="lucide-3d"></i> Resumo Analítico de Despesas
+          </div>
+          <p class="summary-text" id="summary-despesas">Carregando...</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+  <script>
+    lucide.createIcons();
+    let barFatChart, pieChart, barDespChart, gPeriod = 'total';
+    let funcTimeGroup = 'month', funcDespGroup = 'Ambos';
+    document.getElementById('func-time-filter').addEventListener('change', e => { funcTimeGroup = e.target.value; upAreaDesp(loadData()); });
+    document.getElementById('func-desp-filter').addEventListener('change', e => { funcDespGroup = e.target.value; upAreaDesp(loadData()); });
+
+    const barC = ['#8EB69B', '#7DA68B', '#6D967B', '#5C866B', '#4C765B', '#3C864B'];
+    const pieC = ['#8EB69B', '#163832', '#235347', '#051F20', '#OB2B26', '#DAF1DE'];
+    const redC = ['#ff3b30', '#ff4d42', '#ff2418', '#ff665c', '#e6352b', '#ff8076'];
+    function refreshDashboard() {
+      const all = loadData(), fd = filterByPeriod(all, gPeriod), fc = fd.filter(d => d.categoria === 'Funcionários');
+      const td = sumByType(fc, 'Despesa'); document.getElementById('kpi-desp-func').textContent = formatCurrency(td);
+      const curM = filterByPeriod(all, 'month').filter(d => d.categoria === 'Funcionários'), prevM = getPrevPeriodData(all, 'month').filter(d => d.categoria === 'Funcionários');
+      const dg = calcGrowth(sumByType(curM, 'Despesa'), sumByType(prevM, 'Despesa'));
+      const el = document.getElementById('kpi-desp-func-g'); el.className = 'kpi-growth ' + (dg <= 0 ? 'positive' : 'negative');
+      el.innerHTML = `<span>${dg >= 0 ? '+' : ''}${dg.toFixed(1)}%</span><span class="kpi-period">vs mês ant.</span>`;
+      upAreaDesp(all); upPie(fd); upBarDesp(fd); upFunnels(fd);
+    }
+    function sumGroups(data, classe) {
+      const filtered = data.filter(d => d.categoria === 'Outros' && d.tipo === 'Despesa' && d.classe === classe);
+      if (!filtered.length) return [];
+      const map = {}; filtered.forEach(d => { map[d.grupo] = (map[d.grupo] || 0) + d.valor; });
+      return Object.entries(map).sort((a, b) => b[1] - a[1]);
+    }
+    function renderFunnel(arr, id, cols) {
+      const c = document.getElementById(id);
+      if (!arr.length) { c.innerHTML = '<div class="empty-table">Sem dados</div>'; return; }
+      const mx = arr[0][1], tf = arr.reduce((s, x) => s + x[1], 0);
+      c.innerHTML = arr.slice(0, 5).map(([n, v], i) => `<div class="funnel-item"><span class="funnel-rank">${i + 1}º</span><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${mx > 0 ? (v / mx * 100) : 0}%;background:${cols[i % cols.length]}">${tf > 0 ? (v / tf * 100).toFixed(1) : 0}%</div></div><div class="funnel-info"><span class="funnel-name">${n.length > 16 ? n.slice(0, 14) + '…' : n}</span><span class="funnel-val">${formatCurrency(v)}</span></div></div>`).join('');
+    }
+    function upFunnels(fd) {
+      const trans = sumGroups(fd, 'Transporte'), ali = sumGroups(fd, 'Alimentação'), infra = sumGroups(fd, 'Infraestrutura'), out = sumGroups(fd, 'Outras Despesas');
+      renderFunnel(trans, 'funnel-transporte', ['#8EB69B', '#7DA68B', '#6D967B', '#5C866B', '#4C765B']);
+      renderFunnel(ali, 'funnel-alimentacao', ['#8EB69B', '#7DA68B', '#6D967B', '#5C866B', '#4C765B']);
+      renderFunnel(infra, 'funnel-infraestrutura', ['#8EB69B', '#7DA68B', '#6D967B', '#5C866B', '#4C765B']);
+      renderFunnel(out, 'funnel-outras', ['#8EB69B', '#7DA68B', '#6D967B', '#5C866B', '#4C765B']);
+
+      const tf = sumByType(fd.filter(d => d.categoria === 'Funcionários'), 'Despesa');
+      const ttrans = trans.reduce((s, x) => s + x[1], 0), tali = ali.reduce((s, x) => s + x[1], 0), tinfra = infra.reduce((s, x) => s + x[1], 0), tout = out.reduce((s, x) => s + x[1], 0);
+      document.getElementById('summary-despesas').innerHTML = `O período selecionado gerou um gasto de <strong>${formatCurrency(tf)}</strong> com a equipe de Funcionários. Nas Despesas Operacionais (Outros), a classe Transporte totalizou <strong>${formatCurrency(ttrans)}</strong>, Alimentação representou <strong>${formatCurrency(tali)}</strong>, enquanto Infraestrutura e Outros custaram <strong>${formatCurrency(tinfra)}</strong> e <strong>${formatCurrency(tout)}</strong> respectivamente.`;
+    }
+    function upAreaDesp(data) {
+      let filtered = data.filter(d => d.tipo === 'Despesa');
+      if (funcDespGroup === 'Funcionários') filtered = filtered.filter(d => d.categoria === 'Funcionários');
+      else if (funcDespGroup === 'Outros') filtered = filtered.filter(d => d.categoria === 'Outros');
+      else filtered = filtered.filter(d => d.categoria === 'Funcionários' || d.categoria === 'Outros');
+
+      const agg = aggregateData(filtered, funcTimeGroup);
+      if (barFatChart) {
+        barFatChart.data.labels = agg.labels;
+        barFatChart.data.datasets[0].data = agg.map(x => x.d);
+        barFatChart.update(); return
+      }
+      const ctx = document.getElementById('barFatChart').getContext('2d');
+      const grad = ctx.createLinearGradient(0, 0, 0, 300); grad.addColorStop(0, 'rgba(248, 113, 113, 0.25)'); grad.addColorStop(1, 'transparent');
+      barFatChart = new Chart(ctx, {
+        type: 'line', data: { labels: agg.labels, datasets: [{ label: 'Despesas', data: agg.map(x => x.d), borderColor: '#f87171', backgroundColor: grad, fill: true, tension: .4, pointRadius: 4, pointBackgroundColor: '#f87171', borderWidth: 3 }] },
+        options: {
+          responsive: true, maintainAspectRatio: false, interaction: { intersect: false, mode: 'index' }, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#051F20', cornerRadius: 10, padding: 10, bodyFont: { size: 10, family: 'Inter' }, callbacks: { label: c => formatCurrency(c.raw) } } },
+          scales: { x: { grid: { display: false }, ticks: { font: { size: 9, family: 'Inter' }, color: '#94A3B8' } }, y: { grid: { display: false }, ticks: { font: { size: 9, family: 'Inter' }, color: '#94A3B8', callback: v => v >= 1000 ? (v / 1000) + 'k' : v } } }
+        }
+      })
+    }
+    function upPie(fd) {
+      const d = getEmployeeOrders(fd); if (pieChart) { pieChart.data.labels = d.names; pieChart.data.datasets[0].data = d.values; pieChart.update(); return }
+      pieChart = new Chart(document.getElementById('pieChart'), {
+        type: 'doughnut', data: { labels: d.names, datasets: [{ data: d.values, backgroundColor: pieC, borderWidth: 2, borderColor: 'rgba(142, 182, 155, 0.2)', hoverOffset: 8 }] },
+        options: {
+          responsive: true, maintainAspectRatio: false, cutout: '55%', plugins: {
+            legend: { position: 'right', labels: { usePointStyle: true, pointStyle: 'circle', padding: 8, font: { size: 9, family: 'Inter' }, color: '#DAF1DE' } },
+            tooltip: { backgroundColor: '#051F20', cornerRadius: 10, padding: 10, bodyFont: { size: 10, family: 'Inter' }, callbacks: { label: c => c.label + ': ' + c.raw + ' pedido' + (c.raw !== 1 ? 's' : '') } }
+          }
+        }
+      })
+    }
+    function upBarDesp(fd) {
+      const d = getEmployeeData(fd, 'Despesa'); if (barDespChart) { barDespChart.data.labels = d.names; barDespChart.data.datasets[0].data = d.values; barDespChart.update(); return }
+      barDespChart = new Chart(document.getElementById('barDespChart'), {
+        type: 'bar', data: { labels: d.names, datasets: [{ label: 'Despesas', data: d.values, backgroundColor: redC, borderRadius: 8, borderSkipped: false, barPercentage: .65 }] },
+        options: {
+          indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#051F20', cornerRadius: 10, padding: 10, bodyFont: { size: 10, family: 'Inter' }, callbacks: { label: c => formatCurrency(c.raw) } } },
+          scales: { y: { grid: { display: false }, ticks: { font: { size: 9, family: 'Inter' }, color: '#94A3B8' } }, x: { grid: { display: false }, ticks: { font: { size: 9, family: 'Inter' }, color: '#94A3B8', callback: v => v >= 1000 ? (v / 1000) + 'k' : v } } }
+        }
+      })
+    }
+    document.querySelectorAll('.filter-btn').forEach(b => b.addEventListener('click', () => { document.querySelectorAll('.filter-btn').forEach(x => x.classList.remove('active')); b.classList.add('active'); gPeriod = b.dataset.period; refreshDashboard() }));
+    window.addEventListener('dataReady', () => setTimeout(refreshDashboard, 100));
+  </script>
+
+</body>
+
+</html>
