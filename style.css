@@ -1516,6 +1516,8 @@ body {
 }
 
 /* === RESPONSIVE === */
+
+/* --- Tablet Landscape / Telas médias --- */
 @media(max-width:1200px) {
   .kpi-value {
     font-size: 1.15rem
@@ -1533,16 +1535,32 @@ body {
   .funnel-title {
     font-size: .75rem
   }
+
+  .card-kpi {
+    padding: 25px 16px;
+  }
+
+  .kpi-label {
+    font-size: .6rem;
+    letter-spacing: 1.5px;
+  }
 }
 
+/* --- Tablet / Sidebar vira bottom nav --- */
 @media(max-width:1024px) {
   body {
     overflow-y: auto
   }
 
+  .main-glass-wrapper {
+    height: auto;
+    min-height: calc(100vh - 20px);
+    overflow-y: visible;
+  }
+
   .parent {
     height: auto;
-    min-height: 100vh;
+    min-height: auto;
     grid-template-columns: 1fr !important;
     grid-template-rows: auto !important
   }
@@ -1567,7 +1585,8 @@ body {
     border-top: 1px solid rgba(93, 214, 44, 0.15) !important;
     padding: 0;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
-    background: rgba(15, 15, 15, 0.96) !important
+    background: rgba(15, 15, 15, 0.96) !important;
+    animation: none !important;
   }
 
   .sidebar-content {
@@ -1579,7 +1598,12 @@ body {
 
   .menu-title,
   .sidebar-fruits {
-    display: none
+    display: none !important
+  }
+
+  .nav-logout {
+    border-top: none;
+    margin-top: 0;
   }
 
   .sidebar-nav {
@@ -1588,22 +1612,36 @@ body {
     align-items: center;
     width: 100%;
     gap: 0;
-    padding: 0 10px
+    padding: 0 5px
   }
 
   .nav-item {
     flex-direction: column;
-    gap: 4px;
-    padding: 6px;
-    font-size: .65rem;
+    gap: 3px;
+    padding: 6px 4px;
+    font-size: .58rem;
     border-radius: 8px;
     text-align: center;
-    flex: 1
+    flex: 1;
+    min-width: 0;
   }
 
-  .nav-item i {
-    font-size: 1.1rem;
+  .nav-item span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    display: block;
+  }
+
+  .nav-item i,
+  .nav-item .lucide {
+    font-size: 1rem;
     width: auto
+  }
+
+  .nav-item:hover {
+    transform: none;
   }
 
   .nav-item.active::before {
@@ -1627,7 +1665,8 @@ body {
   }
 
   .card {
-    min-height: 120px
+    min-height: 100px;
+    animation: none !important;
   }
 
   .chart-card,
@@ -1636,27 +1675,76 @@ body {
   }
 
   .card-kpi {
-    min-height: 100px
+    min-height: 90px;
+    padding: 20px 16px;
   }
 
   .form-card,
   .dados-card {
-    min-height: 500px
+    min-height: 400px
+  }
+
+  /* Logo container */
+  .logo-container {
+    height: 50px;
+  }
+
+  .logo-img {
+    transform: scale(1.2);
+  }
+
+  /* Circular gauge */
+  .circular-kpi {
+    min-height: 180px;
+  }
+
+  /* Summary */
+  .summary-card {
+    min-height: auto;
+    padding: 14px 16px;
   }
 }
 
+/* --- Tablet Portrait / Smartphones grandes --- */
 @media(max-width:768px) {
+  .main-glass-wrapper {
+    margin: 5px;
+    padding: 10px;
+    border-radius: 20px;
+  }
+
+  .parent {
+    gap: 8px;
+    padding: 5px;
+  }
+
   .header-card {
     flex-direction: column;
-    padding: 14px;
-    gap: 8px;
+    padding: 12px 16px;
+    gap: 10px;
     text-align: center;
     min-height: auto !important
   }
 
+  .header-left h1 {
+    font-size: .85rem;
+    justify-content: center;
+  }
+
   .header-right {
-    flex-direction: column;
-    gap: 6px
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px
+  }
+
+  .logo-container {
+    height: 40px;
+    order: -1;
+  }
+
+  .logo-img {
+    transform: scale(1);
   }
 
   .form-grid {
@@ -1665,7 +1753,13 @@ body {
 
   .dados-header {
     flex-direction: column;
-    align-items: flex-start
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .dados-actions {
+    width: 100%;
+    justify-content: flex-start;
   }
 
   .kpi-value {
@@ -1675,28 +1769,292 @@ body {
   .company-name {
     font-size: .85rem
   }
+
+  /* Chart cards ajustes */
+  .chart-card {
+    min-height: 250px;
+    padding: 14px;
+  }
+
+  .chart-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  /* Funnel cards */
+  .funnel-card {
+    min-height: 220px;
+    padding: 12px;
+  }
+
+  .funnel-item {
+    gap: 4px;
+  }
+
+  .funnel-bar-wrap {
+    height: 22px;
+  }
+
+  .funnel-bar {
+    font-size: .58rem;
+    padding-left: 6px;
+  }
+
+  .funnel-info {
+    min-width: 65px;
+  }
+
+  .funnel-name {
+    font-size: .6rem;
+  }
+
+  .funnel-val {
+    font-size: .55rem;
+  }
+
+  /* Tab buttons */
+  .tabs-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tab-btn {
+    font-size: .68rem;
+    padding: 5px 12px;
+    white-space: nowrap;
+  }
+
+  /* Table */
+  .data-table {
+    font-size: .7rem;
+  }
+
+  .data-table thead th {
+    font-size: .6rem;
+    padding: 10px 8px;
+    letter-spacing: 0.5px;
+  }
+
+  .data-table tbody td {
+    padding: 10px 8px;
+  }
+
+  /* KPI cards */
+  .card-kpi {
+    padding: 16px 14px;
+    gap: 3px;
+  }
+
+  .kpi-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 1.1rem;
+    margin-bottom: 6px;
+  }
+
+  .kpi-growth {
+    font-size: .62rem;
+    padding: 3px 8px;
+  }
+
+  /* Form */
+  .form-card {
+    padding: 18px 16px;
+  }
+
+  .form-title {
+    font-size: .9rem;
+    margin-bottom: 14px;
+  }
+
+  .form-group label {
+    font-size: .65rem;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 10px 14px;
+    font-size: .8rem;
+    border-radius: 10px;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 10px 20px;
+    font-size: .8rem;
+    border-radius: 10px;
+  }
+
+  /* Summary */
+  .summary-text {
+    font-size: .7rem;
+    line-height: 1.55;
+  }
+
+  /* Global filter */
+  .global-filter {
+    gap: 3px;
+    padding: 3px;
+  }
+
+  .filter-btn {
+    padding: 5px 10px;
+    font-size: .65rem;
+  }
+
+  /* Header filter selects */
+  .header-filter {
+    font-size: .65rem;
+    padding: 3px 8px;
+  }
 }
 
+/* --- Smartphones --- */
 @media(max-width:480px) {
   .container-wrapper {
-    padding: 4px
+    padding: 4px;
+    padding-bottom: 75px;
+  }
+
+  .main-glass-wrapper {
+    margin: 3px;
+    padding: 6px;
+    border-radius: 16px;
+  }
+
+  .parent {
+    gap: 6px;
+    padding: 3px;
   }
 
   .card {
     border-radius: 12px;
-    padding: 10px
   }
 
-  .form-card {
-    padding: 16px
+  .header-card {
+    padding: 10px 12px;
+    gap: 8px;
+    border-radius: 12px !important;
   }
 
-  .dados-card {
-    padding: 14px 16px
+  .header-left h1 {
+    font-size: .78rem;
+  }
+
+  .card-kpi {
+    padding: 14px 12px;
+    border-radius: 12px;
+  }
+
+  .card-kpi::after {
+    font-size: 4rem;
+    bottom: -10px;
+    right: -5px;
+  }
+
+  .kpi-value {
+    font-size: 1.15rem;
+  }
+
+  .kpi-label {
+    font-size: .55rem;
+    letter-spacing: 1px;
+  }
+
+  .kpi-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 1rem;
+    border-radius: 10px;
+    margin-bottom: 5px;
   }
 
   .chart-card {
-    padding: 10px
+    padding: 10px;
+    min-height: 220px;
+  }
+
+  .chart-title {
+    font-size: .7rem;
+  }
+
+  .funnel-card {
+    padding: 10px;
+    min-height: 200px;
+  }
+
+  .funnel-title {
+    font-size: .7rem;
+  }
+
+  .form-card {
+    padding: 14px 12px;
+  }
+
+  .form-title {
+    font-size: .85rem;
+  }
+
+  .form-grid {
+    gap: 10px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    text-align: center;
+    padding: 12px;
+  }
+
+  .dados-card {
+    padding: 12px 10px
+  }
+
+  .dados-header h2 {
+    font-size: .82rem;
+  }
+
+  .btn-icon {
+    font-size: .65rem;
+    padding: 5px 8px;
+  }
+
+  /* Summary */
+  .summary-card {
+    padding: 12px 14px;
+  }
+
+  .summary-title {
+    font-size: .65rem;
+  }
+
+  .summary-text {
+    font-size: .65rem;
+  }
+
+  /* Bottom nav adjustments */
+  .sidebar-card {
+    height: 58px;
+    border-radius: 14px 14px 0 0;
+  }
+
+  .nav-item {
+    padding: 4px 2px;
+    font-size: .52rem;
+    gap: 2px;
+  }
+
+  .nav-item i,
+  .nav-item .lucide {
+    font-size: .9rem;
   }
 
   .global-filter {
@@ -1704,8 +2062,171 @@ body {
   }
 
   .filter-btn {
-    padding: 3px 7px;
+    padding: 4px 8px;
     font-size: .6rem
+  }
+
+  /* Circular gauge */
+  .circular-kpi {
+    min-height: 160px;
+    padding: 8px;
+  }
+
+  /* Data table responsiveness */
+  .data-table-wrapper {
+    border-radius: 8px;
+  }
+
+  .data-table {
+    font-size: .65rem;
+  }
+
+  .data-table thead th {
+    font-size: .55rem;
+    padding: 8px 6px;
+  }
+
+  .data-table tbody td {
+    padding: 8px 6px;
+  }
+
+  .tag-faturamento,
+  .tag-despesa {
+    font-size: .6rem;
+    padding: 3px 8px;
+  }
+
+  .btn-remove {
+    font-size: .6rem;
+    padding: 3px 6px;
+  }
+
+  /* Tabs */
+  .tabs-container {
+    border-radius: 8px;
+  }
+
+  .tab-btn {
+    font-size: .62rem;
+    padding: 5px 10px;
+  }
+}
+
+/* --- Smartphones muito pequenos (Galaxy Fold, etc) --- */
+@media(max-width:360px) {
+  .main-glass-wrapper {
+    margin: 2px;
+    padding: 4px;
+    border-radius: 12px;
+  }
+
+  .parent {
+    gap: 5px;
+    padding: 2px;
+  }
+
+  .header-left h1 {
+    font-size: .7rem;
+  }
+
+  .header-card {
+    padding: 8px 10px;
+  }
+
+  .card-kpi {
+    padding: 12px 10px;
+  }
+
+  .kpi-value {
+    font-size: 1rem;
+  }
+
+  .kpi-icon {
+    width: 30px;
+    height: 30px;
+    font-size: .85rem;
+  }
+
+  .chart-card {
+    min-height: 200px;
+    padding: 8px;
+  }
+
+  .form-card {
+    padding: 12px 10px;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 9px 12px;
+    font-size: .75rem;
+  }
+
+  .filter-btn {
+    padding: 3px 6px;
+    font-size: .55rem;
+  }
+
+  .sidebar-card {
+    height: 52px;
+  }
+
+  .nav-item {
+    font-size: .48rem;
+    padding: 3px 2px;
+  }
+
+  .nav-item i,
+  .nav-item .lucide {
+    font-size: .8rem;
+  }
+
+  /* Esconde texto no nav em telas muito pequenas */
+  .nav-item span {
+    font-size: .45rem;
+  }
+}
+
+/* --- Landscape mode em smartphones --- */
+@media(max-height:500px) and (orientation:landscape) {
+  .sidebar-card {
+    height: 50px;
+  }
+
+  .nav-item {
+    flex-direction: row;
+    gap: 4px;
+    font-size: .6rem;
+  }
+
+  .nav-item span {
+    display: inline;
+  }
+
+  .container-wrapper {
+    padding-bottom: 65px;
+  }
+
+  .chart-card,
+  .funnel-card {
+    min-height: 200px;
+  }
+
+  .card-kpi {
+    min-height: 70px;
+    padding: 10px 12px;
+  }
+
+  .kpi-value {
+    font-size: 1rem;
+  }
+
+  .kpi-icon {
+    width: 28px;
+    height: 28px;
+    font-size: .8rem;
+    margin-bottom: 4px;
   }
 }
 
